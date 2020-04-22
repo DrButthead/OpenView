@@ -111,19 +111,31 @@ public class Decomp{
     /* NOTE: There are only 511 possible permutations of first difference
              histograms. There are 512 allocated here to adhere to the FORTRAN
              version. */
-    for(int x = 0; x < freqList.length; x++){
-      /* Standardize the VAX byte order for the "long int" type */
-      freqList[x] = Util.reverseEndian(hist[x], 4);
-      nodeList[x] = new Node(x + 1);
+    int h = 0;
+    int fp = 0;        /* Frequency list pointer */
+    int np = 0;           /* Node list pointer */
+    int cnt = 512;       /* Miscellaneous counter */
+    for(int numNodes = 1; cnt-- > 0; numNodes++){
+      long l = hist[h++];
+      int[] cp = new int[]{
+        (int)((l >> 24) & 0xFF),
+        (int)((l >> 16) & 0xFF),
+        (int)((l >>  8) & 0xFF),
+        (int)((l      ) & 0xFF)
+      };
+      long j = 0;
+      for(int i = 4; --i >= 0; j = (j << 8) | cp[i]);
+      /* Now make the assignment */
+      freqList[fp++] = j;
+      nodeList[np++] = new Node(numNodes);
     }
-    /* Ensure the last element is zeroed out */
-    freqList[freqList.length - 1] = 0;
+    freqList[--fp] = 0;         /* Ensure the last element is zeroed out.  */
     /* Now, sort the frequency list and eliminate all frequencies of zero */
     Object[] res = sortFreq(freqList, nodeList, 0, freqList.length);
     freqList = (long[])(res[0]);
     nodeList = (Node[])(res[1]);
-    int fp = 0;
-    int np = 0;
+    fp = 0;
+    np = 0;
     int numFreq;
     for(numFreq = freqList.length; freqList[fp] == 0 && numFreq > 0; numFreq--){
       fp++;
