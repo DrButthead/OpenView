@@ -148,9 +148,6 @@ public class Decomp{
       np = t;
       freqList[fp + 1] = freqList[fp + 1] + freqList[fp];
       freqList[fp++] = 0;
-      if(fp != np){
-        System.err.println("(internal) Expected fp and np offsets to be equal");
-      }
       res = sortFreq(freqList, nodeList, fp, numFreq);
       freqList = (long[])(res[0]);
       nodeList = (Node[])(res[1]);
@@ -173,10 +170,6 @@ public class Decomp{
    * @return The sorted lists in an object array
    **/
   private Object[] sortFreq(long[] freqList, Node[] nodeList, int offset, long numFreq){
-    /* Sanity check numFreq value */
-    if(offset + numFreq <= freqList.length){
-      System.err.println("(internal) Expected offset+numFreq <= len(freqList)");
-    }
     /* If no elements or invalid continue */
     if(numFreq > 0){
       for(int i = offset + 1; i < numFreq; i++){
