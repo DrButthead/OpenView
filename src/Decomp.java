@@ -91,81 +91,51 @@ public class Decomp{
    **/
   private Node huffTree(long hist){
     /* Histogram frequency list */
-    long int freq_list[512];
+    long[] freqList = new long[512];
     /* DN pointer array list */
-    Node** node_list;
-    /* Frequency list pointer */
-    long int* fp;
-    /* Node list pointer */
-    Node** np;
-    /* Number non-zero frequencies in histogram */
-    long int numFreq;
-    /* Sum of all frequencies */
-    long int sum;
-    /* Counter for DN initialization */
-    short int numNodes;
-    /* Miscellaneous counter */
-    short int cnt;
-    /* Null node value */
-    short int znull = -1;
-    /* Temporary node pointer */
-    Node* temp;
-    /* TODO: Functions called. */
-    void sort_freq();
-    NODE *new_node();
-    char *malloc();
-/***************************************************************************
-  Allocate the array of nodes from memory and initialize these with numbers
-  corresponding with the frequency list.  There are only 511 possible
-  permutations of first difference histograms.  There are 512 allocated
-  here to adhere to the FORTRAN version.
-****************************************************************************/
-    fp = freq_list;
-    node_list = (NODE**)malloc(sizeof(temp) * 512);
-    if(node_list == NULL){
-      printf("\nOut of memory in huff_tree!\n");
-      exit(1);
-    }
-    np = node_list;
-    for(num_nodes = 1, cnt = 512; cnt--; num_nodes++){
-/**************************************************************************
-    The following code has been added to standardize the VAX byte order
-    for the "long int" type.  This code is intended to make the routine
-    as machine independant as possible.
-***************************************************************************/
-      unsigned char *cp = (unsigned char *)hist++;
-      unsigned long int j;
-      short int i;
-      for(i = 4; --i >= 0; j = (j << 8) | *(cp + i));
+    Node[] nodeList = new Node[freqList.length];
+    /* Initialize array with numbers corresponding with the frequency list */
+    /* NOTE: There are only 511 possible permutations of first difference
+             histograms. There are 512 allocated here to adhere to the FORTRAN
+             version. */
+    for(int x = 0; x < freqList.length; x++){
+      /* Standardize the VAX byte order for the "long int" type */
+      int cp = (int)(hist++ % 0xFF);
+      long j;
+      for(int i = 4; --i >= 0; j = (j << 8) | (cp + i));
       /* Now make the assignment */
-      *fp++ = j;
-      temp = new_node(num_nodes);
-      *np++ = temp;
+      freqList[x] = j;
+      nodeList[x] = newNode(x + 1);
     }
     /* Ensure the last element is zeroed out */
-    (*--fp) = 0;
+    freqList[freqList.length - 1] = 0;
     /* Now, sort the frequency list and eliminate all frequencies of zero */
-    num_freq = 512;
-    sort_freq(freq_list, node_list, num_freq);
-    fp = freq_list;
-    np = node_list;
-    for(num_freq = 512; (*fp) == 0 && (num_freq); fp++, np++, num_freq--);
-/***************************************************************************
-  Now create the tree.  Note that if there is only one difference value,
-  it is returned as the root.  On each interation, a new node is created
-  and the least frequently occurring difference is assigned to the right
-  pointer and the next least frequency to the left pointer.  The node
-  assigned to the left pointer now becomes the combination of the two
-  nodes and it's frequency is the sum of the two combining nodes.
-****************************************************************************/
-    for(temp = (*np); (num_freq--) > 1;){
-      temp = new_node(znull);
-      temp->right = (*np++);
-      temp->left = (*np);
-      *np = temp;
-      *(fp+1) = *(fp+1) + *fp;
-      *fp++ = 0;
-      sort_freq(fp, np, num_freq);
+    Object[] res = sortFreq(freqList, nodeList, 0, freqList.length);
+    freqList = (long[])(res[0]);
+    nodeList = (Node[])(res[1]);
+    /* TODO: Convert below code. */
+//    fp = freq_list;
+//    np = node_list;
+//    for(numFreq = 512; (*fp) == 0 && (numFreq); fp++, np++, numFreq--);
+///***************************************************************************
+//  Now create the tree.  Note that if there is only one difference value,
+//  it is returned as the root.  On each interation, a new node is created
+//  and the least frequently occurring difference is assigned to the right
+//  pointer and the next least frequency to the left pointer.  The node
+//  assigned to the left pointer now becomes the combination of the two
+//  nodes and it's frequency is the sum of the two combining nodes.
+//****************************************************************************/
+//    for(temp = (*np); (numFreq--) > 1;){
+//      temp = newNode(-1);
+//      temp->right = (*np++);
+//      temp->left = (*np);
+//      *np = temp;
+//      *(fp + 1) = *(fp + 1) + *fp;
+//      *fp++ = 0;
+//      sortFreq(fp, np, numFreq);
+//    }
+//    return temp;
+    return null; // TODO
   }
 
   /**
