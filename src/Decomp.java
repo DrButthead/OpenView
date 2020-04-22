@@ -217,11 +217,11 @@ public class Decomp{
     /* Decompress the input buffer */
     Node ptr = tree;
     /* Assign the first byte to the working variable, idn */
-    for(int idn = ibuf[ip]; ip < nin; idn = ibuf[++ip]){
+    for(; ip < nin; ip++){
       /* An arithmetic AND is performed using 'test' that is bit shifted to the right */
       for(int test = 0x80; test != 0; test >>= 1){
         /* If the result is 0, then go to right else go to left */
-        ptr = (test & idn) != 0 ? ptr.left : ptr.right;
+        ptr = (test & ibuf[ip]) != 0 ? ptr.left : ptr.right;
         if(ptr.dn != -1){
           /* Have we run out of output? */
           if(op >= nout){
