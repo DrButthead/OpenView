@@ -113,11 +113,7 @@ public class Decomp{
              version. */
     for(int x = 0; x < freqList.length; x++){
       /* Standardize the VAX byte order for the "long int" type */
-      int cp = (int)(hist[x] % 0xFF);
-      long j = 0;
-      for(int i = 4; --i >= 0; j = (j << 8) | (cp + i));
-      /* Now make the assignment */
-      freqList[x] = j;
+      freqList[x] = Util.reverseEndian(hist[x], 4);
       nodeList[x] = new Node(x + 1);
     }
     /* Ensure the last element is zeroed out */
