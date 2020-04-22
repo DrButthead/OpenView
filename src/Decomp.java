@@ -178,21 +178,43 @@ public class Decomp{
    * @return The sorted lists in an object array
    **/
   private Object[] sortFreq(long[] freqList, Node[] nodeList, int offset, long numFreq){
-    /* If no elements or invalid continue */
+    /* Primary pointer into freqList */
+    int i = offset;
+    /* Secondary pointer into freqList */
+    int j = offset;
+    /* Primary pointer to nodeList */
+    int k = offset;
+    /* Secondary pointer into nodeList */
+    int l = offset;
+    /* Temporary storage for freqList */
+    long temp1 = 0;
+    /* Temporary storage for nodeList */
+    Node temp2 = null;
+    /* Count of list elements */
+    long cnt = numFreq;
+/************************************************************************
+  Save the current element - starting with the second - in temporary
+  storage.  Compare with all elements in first part of list moving
+  each up one element until the element is larger.  Insert current
+  element at this point in list.
+*************************************************************************/
+    /* If no elements or invalid, return */
     if(numFreq > 0){
-      for(int i = offset + 1; i < numFreq; i++){
-        for(int j = i; j > offset ; j--){
-          if(freqList[j] < freqList[j - 1]){
-            /* Swap frequencies */
-            long t1 = freqList[j];
-            freqList[j] = freqList[j - 1];
-            freqList[j - 1] = t1;
-            /* Swap nodes */
-            Node t2 = nodeList[j];
-            nodeList[j] = nodeList[j - 1];
-            nodeList[j - 1] = t2;
+      while(--cnt > 0){
+        temp1 = freqList[++i];
+        temp2 = nodeList[++k];
+        for(j = i, l = k; freqList[j - 1] > temp1;){
+          freqList[j] = freqList[j - 1];
+          nodeList[l] = nodeList[l - 1];
+          j--;
+          l--;
+          /* Are we back at the beginning? */
+          if(j <= 0){
+            break;
           }
         }
+        freqList[j] = temp1;
+        nodeList[l] = temp2;
       }
     }
     return new Object[]{ freqList, nodeList };
