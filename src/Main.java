@@ -52,6 +52,11 @@ public class Main{
         case "--type" :
           x = type(args, x);
           break;
+        case "-z" :
+        case "--test" :
+          x = test(args, x);
+          System.exit(0);
+          break;
         default :
           System.err.println("(error) Unknown argument '" + args[x] + "'");
           System.exit(0);
@@ -87,6 +92,7 @@ public class Main{
     System.out.println("                   <FILE> Compressed IMQ file");
     System.out.println("    -t  --type   Output image type");
     System.out.println("                   <TYPE> 'jpg' or 'png'");
+    System.out.println("    -z  --test   Perform internal checks");
     System.out.println("");
     System.out.println("  Usage");
     System.out.println("");
@@ -139,6 +145,29 @@ public class Main{
         System.err.println("(error) Image format unsupported '" + type + "'");
         System.exit(0);
         break;
+    }
+    return x;
+  }
+
+  /**
+   * test()
+   *
+   * Perform internal integrity checks.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int test(String[] args, int x){
+    if(Util.test()){
+      System.out.println("      [ OK ] Util");
+    }else{
+      System.out.println("[FAIL]       Util");
+    }
+    if(Test.test()){
+      System.out.println("      [ OK ] Test");
+    }else{
+      System.out.println("[FAIL]       Test");
     }
     return x;
   }
