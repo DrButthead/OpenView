@@ -29,6 +29,17 @@ public class Decomp{
     public Node right = null;
     public int dn = -1;
     public Node left = null;
+
+    /**
+     * Node()
+     *
+     * Create a new Node with a given difference value.
+     *
+     * @param dn The difference value.
+     **/
+    public Node(int dn){
+      this.dn = dn;
+    }
   }
 
   private Node tree;
