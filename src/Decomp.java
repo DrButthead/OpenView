@@ -26,9 +26,9 @@ public class Decomp{
    * next adjacent node in the tree.
    **/
   private class Node{
-    private Node right = null;
-    private int dn = -1;
-    private Node left = null;
+    public Node right = null;
+    public int dn = -1;
+    public Node left = null;
   }
 
   private Node tree;
