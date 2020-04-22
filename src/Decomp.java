@@ -59,7 +59,7 @@ public class Decomp{
    * normalized for table use to the range 1 to 511 by adding 256 to each
    * difference.
    **/
-  public Decomp(long int hist){
+  public Decomp(long hist){
     /* Simply call the huff_tree routine and return */
     tree = huffTree(hist);
   }
@@ -89,7 +89,7 @@ public class Decomp{
    * @param hist First difference histogram.
    * @return The constructed tree.
    **/
-  Node huffTree(long int hist){
+  private Node huffTree(long hist){
     /* Histogram frequency list */
     long int freq_list[512];
     /* DN pointer array list */
