@@ -19,7 +19,7 @@ public class Util{
    * @param len The number of bytes to be reversed.
    * @return The reverse integer.
    **/
-  public static int reverseEndian(int v, int len) throws NumberFormatException{
+  public static long reverseEndian(long v, int len) throws NumberFormatException{
     /* Check preconditions */
     if(len > 0 && len <= 4){
       /* Perform reversal for half the length only */
