@@ -105,7 +105,7 @@ public class Decomp{
   private Node huffTree(long[] hist){
     /* Histogram frequency list */
     long[] freqList = new long[512];
-    /* DN pointer array list */
+    /* Node array list */
     Node[] nodeList = new Node[freqList.length];
     /* Initialize array with numbers corresponding with the frequency list */
     /* NOTE: There are only 511 possible permutations of first difference
