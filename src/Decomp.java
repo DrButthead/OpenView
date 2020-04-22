@@ -72,7 +72,7 @@ public class Decomp{
    * normalized for table use to the range 1 to 511 by adding 256 to each
    * difference.
    **/
-  public Decomp(long hist){
+  public Decomp(long[] hist){
     /* Simply call the huff_tree routine and return */
     tree = huffTree(hist);
   }
@@ -102,7 +102,7 @@ public class Decomp{
    * @param hist First difference histogram.
    * @return The constructed tree.
    **/
-  private Node huffTree(long hist){
+  private Node huffTree(long[] hist){
     /* Histogram frequency list */
     long[] freqList = new long[512];
     /* DN pointer array list */
@@ -113,7 +113,7 @@ public class Decomp{
              version. */
     for(int x = 0; x < freqList.length; x++){
       /* Standardize the VAX byte order for the "long int" type */
-      int cp = (int)(hist++ % 0xFF);
+      int cp = (int)(hist[x] % 0xFF);
       long j = 0;
       for(int i = 4; --i >= 0; j = (j << 8) | (cp + i));
       /* Now make the assignment */
