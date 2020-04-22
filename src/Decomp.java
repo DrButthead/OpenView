@@ -116,7 +116,7 @@ public class Decomp{
       for(int i = 4; --i >= 0; j = (j << 8) | (cp + i));
       /* Now make the assignment */
       freqList[x] = j;
-      nodeList[x] = newNode(x + 1);
+      nodeList[x] = new Node(x + 1);
     }
     /* Ensure the last element is zeroed out */
     freqList[freqList.length - 1] = 0;
