@@ -166,7 +166,40 @@ public class Decomp{
       *(fp+1) = *(fp+1) + *fp;
       *fp++ = 0;
       sort_freq(fp, np, num_freq);
+  }
+
+  /**
+   * sortFreq()
+   *
+   * This routine uses an insertion sort to reorder a frequency list in order
+   * of increasing frequency. The corresponding elements of the node list are
+   * reordered to maintain correspondence. The node list is actually a pointer
+   * to an array of pointers to tree nodes.
+   *
+   * @param freqList Pointer to frequency list.
+   * @param nodeList Pointer to array of node pointers.
+   * @param offset An offset into the array to begin sorting from.
+   * @param numFreq Number of values in freq list.
+   * @return The sorted lists in an object array
+   **/
+  private Object[] sortFreq(long[] freqList, Node[] nodeList, int offset, long numFreq){
+    /* If no elements or invalid continue */
+    if(numFreq > 0){
+      for(int i = offset + 1; i < numFreq; i++){
+        for(int j = i; j > offset ; j--){
+          if(freqList[j] < freqList[j - 1]){
+            /* Swap frequencies */
+            long t1 = freqList[j];
+            freqList[j] = freqList[j - 1];
+            freqList[j - 1] = t1;
+            /* Swap nodes */
+            Node t2 = nodeList[j];
+            nodeList[j] = nodeList[j - 1];
+            nodeList[j - 1] = t2;
+          }
+        }
+      }
     }
-    return temp;
+    return new Object[]{ freqList, nodeList };
   }
 }
