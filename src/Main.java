@@ -6,6 +6,9 @@ package b.ov;
  * Parse the command line arguments are start execution as required.
  **/
 public class Main{
+  private String input;
+  private String type;
+
   /**
    * main()
    *
@@ -25,6 +28,118 @@ public class Main{
    * @param args The command line arguments.
    **/
   public Main(String[] args){
-    /* TODO: Parse command line parameters. */
+    /* Check if any arguments given */
+    if(args.length <= 0){
+      System.out.println("See '--help' for usage");
+      System.exit(0);
+    }
+    /* Setup default global variables */
+    input = null;
+    type = "png";
+    /* Parse command line parameters */
+    for(int x = 0; x < args.length; x++){
+      switch(args[x]){
+        case "-h" :
+        case "--help" :
+          x = help(args, x);
+          System.exit(0);
+          break;
+        case "-i" :
+        case "--input" :
+          x = input(args, x);
+          break;
+        case "-t" :
+        case "--type" :
+          x = type(args, x);
+          break;
+        default :
+          System.err.println("(error) Unknown argument '" + args[x] + "'");
+          System.exit(0);
+          break;
+      }
+    }
+    /* Check if we want to perform a conversion */
+    if(input != null){
+      IMQ imq = new IMQ(input);
+      imq.decompress();
+      imq.save(input + "." + type, type);
+    }else{
+      System.err.println("(error) Need an input to continue execution");
+    }
+  }
+
+  /**
+   * help()
+   *
+   * Display program help.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int help(String[] args, int x){
+    System.out.println("openview [OPT]");
+    System.out.println("");
+    System.out.println("  OPTions");
+    System.out.println("");
+    System.out.println("    -h  --help   Display this help");
+    System.out.println("    -i  --input  Input a file to be converted");
+    System.out.println("                   <FILE> Compressed IMQ file");
+    System.out.println("    -t  --type   Output image type");
+    System.out.println("                   <TYPE> 'jpg' or 'png'");
+    System.out.println("");
+    System.out.println("  Usage");
+    System.out.println("");
+    System.out.println("    openview -t png -i in.imq");
+    System.out.println("");
+    System.out.println("    Output: in.imq.png");
+    return x;
+  }
+
+  /**
+   * input()
+   *
+   * Get an input file.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int input(String[] args, int x){
+    if(x + 1 >= args.length){
+      System.err.println("(error) No input file given");
+      System.exit(0);
+    }
+    ++x;
+    input = args[x];
+    return x;
+  }
+
+  /**
+   * type()
+   *
+   * Get an output type.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int type(String[] args, int x){
+    if(x + 1 >= args.length){
+      System.err.println("(error) No type given");
+      System.exit(0);
+    }
+    ++x;
+    type = args[x];
+    switch(type){
+      case "jpg" :
+      case "png" :
+        break;
+      default :
+        System.err.println("(error) Image format unsupported '" + type + "'");
+        System.exit(0);
+        break;
+    }
+    return x;
   }
 }
