@@ -299,7 +299,7 @@ public class Test{
       for (k=0; k<2; ++k)
       {
 //         decompress(lin_in,lin_out,&len_in,&len_out);
-         lin_out = d.decompress(charArrByte(lin_in), len_in, len_out); // ADDITION
+         lin_out = d.decompress(Util.charArrByte(lin_in), len_in, len_out); // ADDITION
          for (i=0; i<836; ++i)
          {
          if (lin_out[i] != lin_tst[i])
@@ -330,21 +330,5 @@ public class Test{
       longwords[x] = Util.reverseEndian(longwords[x], 4);
     }
     return longwords;
-  }
-
-  /**
-   * charArrByte()
-   *
-   * Convert a char array to a byte array.
-   *
-   * @param a The input char array.
-   * @return The output byte array.
-   **/
-  private static byte[] charArrByte(char[] a){
-    byte[] b = new byte[a.length];
-    for(int x = 0; x < a.length; x++){
-      b[x] = (byte)a[x];
-    }
-    return b;
   }
 }

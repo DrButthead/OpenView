@@ -50,6 +50,22 @@ public class Util{
   }
 
   /**
+   * charArrByte()
+   *
+   * Convert a char array to a byte array.
+   *
+   * @param a The input char array.
+   * @return The output byte array.
+   **/
+  public static byte[] charArrByte(char[] a){
+    byte[] b = new byte[a.length];
+    for(int x = 0; x < a.length; x++){
+      b[x] = (byte)a[x];
+    }
+    return b;
+  }
+
+  /**
    * test()
    *
    * Test that the functions documented here work correctly.
