@@ -266,7 +266,7 @@ public class Decomp{
             return obuf;
           }
           odn -= ptr.dn + 256;
-          obuf[op] = (byte)odn;
+          obuf[op] = odn;
           op++;
           ptr = tree;
         }
