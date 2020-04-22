@@ -1,0 +1,82 @@
+        .title dcmprs
+;*******************************************************************************
+;_TITLE         DCMPRS, a subroutine to decompress a line of image data
+;
+;_CALL_SEQ      the FORTRAN call is
+;               CALL DCMPRS (ibuf, obuf, nb, ns, tree)
+;
+;_ARGS          ibuf - input compressed bit string (character variable)
+;               obuf - output decompressed image line (character variable)
+;                      (both ibuf and obuf must declared as character
+;                      variables in by the calling program)
+;               nb -   number of bytes in input string
+;               ns -   number of bytes expected in output line
+;               tree - binary tree for decompressing line
+;
+;_DESC          The routine uses each successive bit in the input
+;               string to trace down the tree to the leaf.  The value
+;               of the pixel is stored in the leaf.  If diff is true
+;               the routine reconstructs the undifferenced pixel
+;               value.  For VAX/VMS users using the fortran versions
+;               of the decompression software, this macro version
+;               can replace the fortran version of the same name. By
+;               utilizing the macro version, the speed of the decompression
+;               software will improve by a factor of 2. This routine
+;               only works with the fortran versions of the decompression
+;               software
+;
+;_HIST          28Jul87, DMcMacken, ISD, Flagstaff, Original version
+;
+;_END
+;*******************************************************************************
+;
+;       local variables
+;
+root:   .long                   ;tree root pointer
+;
+        .entry  dcmprs,^m<r2,r3,r4,r5,r6,r7,r8,r9,r10,r11>
+;
+        movl    4(ap),r11       ;input buffer descriptor
+        movl    4(r11),r11      ;input buffer address
+        movl    8(ap),r10       ;output buffer descriptor
+        movl    4(r10),r10	;output buffer address
+        movl    @12(ap),r9      ;number input bytes
+        movl    @16(ap),r8      ;number output samples expected
+        movl    20(ap),r7       ;address of code tree
+;
+        movl    #1023,r5
+        mull2   #5,r5
+        movzwl  (r7)[r5],root
+        decl    root
+        mull2   #5,root
+;
+        decl    r8              ;count first sample
+        decl    r9              ;..it is not compressed
+        movzbw  (r11)+,r6       ;get first sample
+        movb    r6,(r10)+       ;return it unchanged
+;
+        movl    root,r5         ;pointer to root of tree
+loop:   movzbw  (r11)+,r3       ;get next byte
+        movl    #7,r4           ;bit pointer
+lp2:    bbc     r4,r3,right     ;test input bit
+                                ;0 - right
+                                ;1 - left
+        movw    4(r7)[r5],r5    ;get left pointer
+        brb     cont            ;continue
+right:  movw    2(r7)[r5],r5    ;get right pointer
+cont:   decl    r5              ;compute new
+        mull2   #5,r5           ;...offset
+        cmpw    #-1,(r7)[r5]    ;at leaf?
+        beql    next            ;no, go to next branch
+        movw    (r7)[r5],r2     ;yes, get value
+        subw2   r2,r6           ;compute difference
+        addw2   #256,r6         ;make it positive
+        movw    r6,r2           ;return value to r2
+        movb    r2,(r10)+       ;return sample
+        movl    root,r5         ;point back to root
+        sobgtr  r8,next         ;more samples?
+        ret                     ;no, return to caller
+next:   sobgeq  r4,lp2          ;more bits in current byte?
+        sobgtr  r9,loop         ;no, is there another input byte?
+        ret                     ;no, return
+        .end
