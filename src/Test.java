@@ -325,10 +325,23 @@ public class Test{
    * computer hardware which stores long words in "most significant byte order
    * first" order. This is necessary because the DECOMPRESSION routines will
    * automatically swap the byte order for this computer hardware.
+   *
+   * @param longwords The long words to have their order corrected.
+   * @return The corrected order of the long words.
    **/
   private static long[] swapit(long[] longwords){
-    for(int x = 0; x < longwords.length; x++){
-      longwords[x] = Util.reverseEndian(longwords[x], 4);
+    int lw = 0;
+    for(int cnt = 512; cnt-- > 0;){
+      long l = longwords[lw];
+      int[] cp = new int[]{
+        (int)((l >> 24) & 0xFF),
+        (int)((l >> 16) & 0xFF),
+        (int)((l >>  8) & 0xFF),
+        (int)((l      ) & 0xFF)
+      };
+      long j = 0;
+      for(int i = 4; --i >= 0; j = (j << 8) | cp[i]);
+      longwords[lw++] = j;
     }
     return longwords;
   }
