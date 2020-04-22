@@ -111,10 +111,14 @@ public class Decomp{
     /* NOTE: There are only 511 possible permutations of first difference
              histograms. There are 512 allocated here to adhere to the FORTRAN
              version. */
+    /* Track histogram pointer */
     int h = 0;
-    int fp = 0;        /* Frequency list pointer */
-    int np = 0;           /* Node list pointer */
-    int cnt = 512;       /* Miscellaneous counter */
+    /* Frequency list pointer */
+    int fp = 0;
+    /* Node list pointer */
+    int np = 0;
+    /* Miscellaneous counter */
+    int cnt = 512;
     for(int numNodes = 1; cnt-- > 0; numNodes++){
       long l = hist[h++];
       int[] cp = new int[]{
