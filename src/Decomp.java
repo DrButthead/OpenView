@@ -101,7 +101,7 @@ public class Decomp{
     for(int x = 0; x < freqList.length; x++){
       /* Standardize the VAX byte order for the "long int" type */
       int cp = (int)(hist++ % 0xFF);
-      long j;
+      long j = 0;
       for(int i = 4; --i >= 0; j = (j << 8) | (cp + i));
       /* Now make the assignment */
       freqList[x] = j;
