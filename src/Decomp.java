@@ -196,4 +196,55 @@ public class Decomp{
     }
     return new Object[]{ freqList, nodeList };
   }
+
+  /**
+   * decompress()
+   *
+   * This routine follows a path from the root of the Huffman tree to one of
+   * it's leaves. The choice at each branch is decided by the successive bits
+   * of the compressed input stream.  Left for 1, right for 0. Only leaf nodes
+   * have a value other than -1. The routine traces a path through the tree
+   * until it finds a node with a value not equal to -1 (a leaf node). The
+   * value at the leaf node is subtracted from the preceding pixel value plus
+   * 256 to restore the uncompressed pixel. This algorithm is then repeated
+   * until the entire line has been processed.
+   *
+   * @param ibuf Compressed data buffer.
+   * @param nin Number of bytes on input buffer.
+   * @param nout Number of bytes in output buffer.
+   * @return Decompressed image line.
+   **/
+  public byte[] decompress(byte[] ibuf, int nin, int nout){
+    /* Create output buffer */
+    byte[] obuf = new byte[nout];
+    /* Track buffer pointers */
+    int ip = 0;
+    int op = 0;
+    /* Make initial assignments */
+    byte odn = ibuf[ip];
+    obuf[op] = ibuf[ip];
+    ++ip;
+    ++op;
+    /* Decompress the input buffer */
+    Node ptr = tree;
+    /* Assign the first byte to the working variable, idn */
+    for(int idn = ibuf[ip]; ip < nin; idn = ibuf[++ip]){
+      /* An arithmetic AND is performed using 'test' that is bit shifted to the right */
+      for(int test = 0x80; test != 0; test >>= 1){
+        /* If the result is 0, then go to right else go to left */
+        ptr = (test & idn) != 0 ? ptr.left : ptr.right;
+        if(ptr.dn != -1){
+          /* Have we run out of output? */
+          if(op >= nout){
+            return obuf;
+          }
+          odn -= ptr.dn + 256;
+          obuf[op] = odn;
+          op++;
+          ptr = tree;
+        }
+      }
+    }
+    return obuf;
+  }
 }
