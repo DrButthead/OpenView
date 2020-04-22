@@ -302,7 +302,8 @@ public class Test{
          lin_out = d.decompress(Util.charArrByte(lin_in), len_in, len_out); // ADDITION
          for (i=0; i<836; ++i)
          {
-         if (lin_out[i] != lin_tst[i])
+//         if (lin_out[i] != lin_tst[i])
+         if (lin_out[i] != Util.charArrByte(lin_tst)[i]) // ADDITION
             { ifail = 1;
 //              printf("Error, decompression routines failed\n");
 //              printf(" sample number:            %d\n",i);
