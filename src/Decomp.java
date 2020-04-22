@@ -126,29 +126,36 @@ public class Decomp{
     Object[] res = sortFreq(freqList, nodeList, 0, freqList.length);
     freqList = (long[])(res[0]);
     nodeList = (Node[])(res[1]);
-    /* TODO: Convert below code. */
-//    fp = freq_list;
-//    np = node_list;
-//    for(numFreq = 512; (*fp) == 0 && (numFreq); fp++, np++, numFreq--);
-///***************************************************************************
-//  Now create the tree.  Note that if there is only one difference value,
-//  it is returned as the root.  On each interation, a new node is created
-//  and the least frequently occurring difference is assigned to the right
-//  pointer and the next least frequency to the left pointer.  The node
-//  assigned to the left pointer now becomes the combination of the two
-//  nodes and it's frequency is the sum of the two combining nodes.
-//****************************************************************************/
-//    for(temp = (*np); (numFreq--) > 1;){
-//      temp = newNode(-1);
-//      temp->right = (*np++);
-//      temp->left = (*np);
-//      *np = temp;
-//      *(fp + 1) = *(fp + 1) + *fp;
-//      *fp++ = 0;
-//      sortFreq(fp, np, numFreq);
-//    }
-//    return temp;
-    return null; // TODO
+    int fp = 0;
+    int np = 0;
+    int numFreq;
+    for(numFreq = freqList.length; freqList[fp] == 0 && numFreq > 0; numFreq--){
+      fp++;
+      np++;
+    }
+    /* Now create the tree */
+    /* NOTE: If there is only one difference value, it is returned as the root.
+             On each iteration, a new node is created and the least frequently
+             occurring difference is assigned to the right pointer and the next
+             least frequency to the left pointer. The node assigned to the left
+             pointer now becomes the combination of the two nodes and it's
+             frequency is the sum of the two combining nodes. */
+    int t;
+    for(t = np; (numFreq--) > 1;){
+      nodeList[t] = new Node(-1);
+      nodeList[t].right = nodeList[np++];
+      nodeList[t].left = nodeList[np];
+      np = t;
+      freqList[fp + 1] = freqList[fp + 1] + freqList[fp];
+      freqList[fp++] = 0;
+      if(fp != np){
+        System.err.println("(internal) Expected fp and np offsets to be equal");
+      }
+      res = sortFreq(freqList, nodeList, fp, numFreq);
+      freqList = (long[])(res[0]);
+      nodeList = (Node[])(res[1]);
+    }
+    return nodeList[t];
   }
 
   /**
