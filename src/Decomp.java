@@ -181,7 +181,7 @@ public class Decomp{
    * @param numFreq Number of values in freq list.
    * @return The sorted lists in an object array
    **/
-  private Object[] sortFreq(long[] freqList, Node[] nodeList, int offset, long numFreq){
+  private static Object[] sortFreq(long[] freqList, Node[] nodeList, int offset, long numFreq){
     /* Primary pointer into freqList */
     int i = offset;
     /* Secondary pointer into freqList */
