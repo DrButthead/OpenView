@@ -248,14 +248,12 @@ public class Decomp{
     int ip = 0;
     int op = 0;
     /* Make initial assignments */
-    byte odn = ibuf[ip];
-    obuf[op] = ibuf[ip];
-    ++ip;
-    ++op;
+    byte odn = ibuf[ip++];
+    obuf[op++] = odn;
     /* Decompress the input buffer */
     Node ptr = tree;
     /* Assign the first byte to the working variable, idn */
-    for(; ip < nin; ip++){
+    for(; ip < nin; ++ip){
       /* An arithmetic AND is performed using 'test' that is bit shifted to the right */
       for(int test = 0x80; test != 0; test >>= 1){
         /* If the result is 0, then go to right else go to left */
