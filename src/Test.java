@@ -286,7 +286,9 @@ public class Test{
    * @return True if tests pass, otherwise false.
    **/
   public static boolean test(){
-    byte[] lin_out;
+    byte[] lin_out = null;
+    Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 44, 38, 256);
+    Util.PGM pgmTst = new Util.PGM("test-lin-tst.pgm", 44, 38, 256);
     /*---- Edited original source (below) ----*/
 //      extern void decmpinit();
 //      extern void decompress();
@@ -300,6 +302,8 @@ public class Test{
       {
 //         decompress(lin_in,lin_out,&len_in,&len_out);
          lin_out = d.decompress(Util.charArrByte(lin_in), len_in, len_out); // ADDITION
+         pgmOut.write(lin_out); // ADDITION
+         pgmTst.write(lin_tst); // ADDITION
          for (i=0; i<836; ++i)
          {
 //         if (lin_out[i] != lin_tst[i])
@@ -315,6 +319,8 @@ public class Test{
 //      if (ifail == 0) printf("Decompression routines succeeded\n");
 //      if (ifail != 0) printf("Decompression routines failed\n");
     /*---- Edited original source (above) ----*/
+    pgmOut.close();
+    pgmTst.close();
     return ifail == 0;
   }
 
