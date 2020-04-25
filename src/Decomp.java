@@ -196,12 +196,6 @@ public class Decomp{
     Node temp2 = null;
     /* Count of list elements */
     long cnt = numFreq;
-/************************************************************************
-  Save the current element - starting with the second - in temporary
-  storage.  Compare with all elements in first part of list moving
-  each up one element until the element is larger.  Insert current
-  element at this point in list.
-*************************************************************************/
     /* If no elements or invalid, return */
     if(numFreq > 0){
       while(--cnt > 0){
