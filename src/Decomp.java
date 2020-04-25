@@ -138,7 +138,7 @@ public class Decomp{
     /* Ensure the last element is zeroed out */
     freqList[--fp] = 0;
     /* Now, sort the frequency list and eliminate all frequencies of zero */
-    Object[] res = sortFreq(freqList, nodeList, 0, freqList.length);
+    Object[] res = sortFreq(freqList, nodeList, 0, 0, freqList.length);
     freqList = (long[])(res[0]);
     nodeList = (Node[])(res[1]);
     /* Reset pointers */
@@ -165,7 +165,7 @@ public class Decomp{
       np = t;
       freqList[fp + 1] = freqList[fp + 1] + freqList[fp];
       freqList[fp++] = 0;
-      res = sortFreq(freqList, nodeList, fp, numFreq);
+      res = sortFreq(freqList, nodeList, fp, np, numFreq);
       freqList = (long[])(res[0]);
       nodeList = (Node[])(res[1]);
     }
@@ -182,19 +182,26 @@ public class Decomp{
    *
    * @param freqList Pointer to frequency list.
    * @param nodeList Pointer to array of node pointers.
-   * @param offset An offset into the array to begin sorting from.
+   * @param fo Frequency offset into the array to begin sorting from.
+   * @param no Node offset into the array to begin sorting from.
    * @param numFreq Number of values in freq list.
    * @return The sorted lists in an object array
    **/
-  private static Object[] sortFreq(long[] freqList, Node[] nodeList, int offset, long numFreq){
+  private static Object[] sortFreq(
+    long[] freqList,
+    Node[] nodeList,
+    int fo,
+    int no,
+    long numFreq
+  ){
     /* Primary pointer into freqList */
-    int i = offset;
+    int i = fo;
     /* Secondary pointer into freqList */
-    int j = offset;
+    int j = fo;
     /* Primary pointer to nodeList */
-    int k = offset;
+    int k = no;
     /* Secondary pointer into nodeList */
-    int l = offset;
+    int l = no;
     /* Temporary storage for freqList */
     long temp1 = 0;
     /* Temporary storage for nodeList */
@@ -284,7 +291,7 @@ public class Decomp{
     boolean pass = true;
     long[] f0 = new long[]{ -1, 6, 3, 9 };
     Node[] n0 = new Node[]{ null, null, null, null };
-    Object[] r0 = sortFreq(f0, n0, 0, f0.length);
+    Object[] r0 = sortFreq(f0, n0, 0, 0, f0.length);
     pass |= ((long[])r0[0])[0] == -1;
     pass |= ((long[])r0[0])[1] == 3;
     pass |= ((long[])r0[0])[2] == 6;
