@@ -120,6 +120,7 @@ public class Decomp{
     /* Miscellaneous counter */
     int cnt = 512;
     for(int numNodes = 1; cnt-- > 0; numNodes++){
+      /* Pretend to "cast" long value to byte array */
       long l = hist[h++];
       int[] cp = new int[]{
         (int)((l >> 24) & 0xFF),
@@ -127,19 +128,23 @@ public class Decomp{
         (int)((l >>  8) & 0xFF),
         (int)((l      ) & 0xFF)
       };
+      /* Reverse the 4 bytes */
       long j = 0;
       for(int i = 4; --i >= 0; j = (j << 8) | cp[i]);
       /* Now make the assignment */
       freqList[fp++] = j;
       nodeList[np++] = new Node(numNodes);
     }
-    freqList[--fp] = 0;         /* Ensure the last element is zeroed out.  */
+    /* Ensure the last element is zeroed out */
+    freqList[--fp] = 0;
     /* Now, sort the frequency list and eliminate all frequencies of zero */
     Object[] res = sortFreq(freqList, nodeList, 0, freqList.length);
     freqList = (long[])(res[0]);
     nodeList = (Node[])(res[1]);
+    /* Reset pointers */
     fp = 0;
     np = 0;
+    /* Skip beginning zeros */
     int numFreq;
     for(numFreq = freqList.length; freqList[fp] == 0 && numFreq > 0; numFreq--){
       fp++;
@@ -260,6 +265,7 @@ public class Decomp{
           odn -= ptr.dn + 256;
           obuf[op] = odn;
           op++;
+          /* Return back to the top of the tree */
           ptr = tree;
         }
       }
