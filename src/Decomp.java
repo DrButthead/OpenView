@@ -270,8 +270,7 @@ public class Decomp{
             return obuf;
           }
           odn -= ptr.dn + 256;
-          obuf[op] = odn;
-          op++;
+          obuf[op++] = odn;
           /* Return back to the top of the tree */
           ptr = tree;
         }
