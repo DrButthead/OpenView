@@ -12,7 +12,7 @@ package b.ov;
  **/
 public class Decomp{
   /**
-   * Decomp.Node.java
+   * Node.Decomp.java
    *
    * This defines the basic element of a node used to build the Huffman tree
    * for data decompression. The code declares a user defined type that
