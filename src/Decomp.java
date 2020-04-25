@@ -266,4 +266,23 @@ public class Decomp{
     }
     return obuf;
   }
+
+  /**
+   * test()
+   *
+   * Test that the functions documented here work correctly.
+   *
+   * @return True if tests pass, otherwise false.
+   **/
+  public static boolean test(){
+    boolean pass = true;
+    long[] f0 = new long[]{ -1, 6, 3, 9 };
+    Node[] n0 = new Node[]{ null, null, null, null };
+    Object[] r0 = sortFreq(f0, n0, 0, f0.length);
+    pass |= ((long[])r0[0])[0] == -1;
+    pass |= ((long[])r0[0])[1] == 3;
+    pass |= ((long[])r0[0])[2] == 6;
+    pass |= ((long[])r0[0])[3] == 9;
+    return pass;
+  }
 }

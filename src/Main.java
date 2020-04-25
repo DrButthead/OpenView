@@ -159,15 +159,20 @@ public class Main{
    * @return New offset into parameters.
    **/
   private int test(String[] args, int x){
-    if(Util.test()){
-      System.out.println("      [ OK ] Util");
+    if(Decomp.test()){
+      System.out.println("      [ OK ] Decomp");
     }else{
-      System.out.println("[FAIL]       Util");
+      System.out.println("[FAIL]       Decomp");
     }
     if(Test.test()){
       System.out.println("      [ OK ] Test");
     }else{
       System.out.println("[FAIL]       Test");
+    }
+    if(Util.test()){
+      System.out.println("      [ OK ] Util");
+    }else{
+      System.out.println("[FAIL]       Util");
     }
     return x;
   }
