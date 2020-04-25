@@ -1,5 +1,8 @@
 package b.ov;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.NumberFormatException;
 
 /**
@@ -9,6 +12,167 @@ import java.lang.NumberFormatException;
  * older machine architecture.
  **/
 public class Util{
+  /**
+   * PGM.Util.java
+   *
+   * A simple method for writing foolproof grey scale debug images.
+   **/
+  public static class PGM{
+    private FileWriter fw;
+    private int width;
+    private int height;
+    private int colMax;
+    private long count;
+
+    /**
+     * PGM()
+     *
+     * Open a PGM file for writing and pre-write the header information.
+     *
+     * @param filename The filename to be written to.
+     * @param width The width of the image of at least one pixel.
+     * @param height The height of the image of at least one pixel.
+     * @param colMax The maximum colour that should be considered white. Note
+     * that black is always zero and this number should be positive.
+     **/
+    public PGM(String filename, int width, int height, int colMax){
+      fw = null;
+      if(filename == null){
+        System.err.println("(internal) filename cannot be NULL");
+      }
+      if(width <= 0){
+        System.err.println("(internal) width is supposed to be > 0");
+      }
+      if(height <= 0){
+        System.err.println("(internal) height is supposed to be > 0");
+      }
+      if(colMax <= 0){
+        System.err.println("(internal) colMax is supposed to be > 0");
+      }
+      try{
+        fw = new FileWriter(new File(filename));
+        fw.write("P2\n" + width + " " + height + "\n" + colMax + "\n");
+      }catch(IOException e){
+        fw = null;
+        System.err.println("(internal) Failed to create PGM file");
+      }
+      this.width = width;
+      this.height = height;
+      this.colMax = colMax;
+      count = 0;
+    }
+
+    /**
+     * write()
+     *
+     * Write a single pixel to the file. This method will track the number of
+     * pixels entered and auto-line break.
+     *
+     * @param pixel The pixel to be written. It must be positive and less than
+     * or equal to the maximum colour.
+     **/
+    public void write(int pixel){
+      if(fw != null){
+        /* Check that pixel is valid */
+        if(pixel >= 0 && pixel <= colMax){
+          try{
+            /* Print String version of number */
+            fw.write(Integer.toString(pixel));
+            ++count;
+            /* Check if space or newline needed */
+            if(count % width != 0){
+              fw.write(' ');
+            }else{
+              fw.write('\n');
+            }
+          }catch(IOException e){
+            System.err.println("(internal) Failed to write to PGM file");
+          }
+        }else{
+          System.err.println("(internal) Invalid pixel '" + pixel + "'");
+        }
+      }else{
+        System.err.println("(internal) Unable to write pixel as no PGM file");
+      }
+    }
+
+    /**
+     * write()
+     *
+     * Write several pixels to the file. This method will track the number of
+     * pixels entered and auto-line break.
+     *
+     * @param pixels The pixels to be written. Each pixel must be positive and
+     * less than or equal to the maximum colour.
+     **/
+    public void write(int[] pixels){
+      if(pixels != null && pixels.length > 0){
+        for(int x = 0; x < pixels.length; x++){
+          write(pixels[x]);
+        }
+      }else{
+        System.err.println("(internal) No pixels to write");
+      }
+    }
+
+    /**
+     * write()
+     *
+     * Write several pixels to the file. This method will track the number of
+     * pixels entered and auto-line break.
+     *
+     * @param pixels The pixels to be written. Each pixel must be positive and
+     * less than or equal to the maximum colour.
+     **/
+    public void write(byte[] pixels){
+      if(pixels != null && pixels.length > 0){
+        for(int x = 0; x < pixels.length; x++){
+          write((int)(pixels[x] & 0xFF));
+        }
+      }else{
+        System.err.println("(internal) No pixels to write");
+      }
+    }
+
+    /**
+     * write()
+     *
+     * Write several pixels to the file. This method will track the number of
+     * pixels entered and auto-line break.
+     *
+     * @param pixels The pixels to be written. Each pixel must be positive and
+     * less than or equal to the maximum colour.
+     **/
+    public void write(char[] pixels){
+      if(pixels != null && pixels.length > 0){
+        for(int x = 0; x < pixels.length; x++){
+          write((int)pixels[x]);
+        }
+      }else{
+        System.err.println("(internal) No pixels to write");
+      }
+    }
+
+    /**
+     * close()
+     *
+     * Finish writing and close safely.
+     **/
+    public void close(){
+      if(fw != null){
+        try{
+          fw.flush();
+          fw.close();
+          fw = null;
+        }catch(IOException e){
+          System.err.println("(internal) Failed to close PGM file");
+        }
+      }else{
+        System.err.println("(internal) File not open, so cannot close");
+      }
+    }
+  }
+
   /**
    * reverseEndian()
    *
