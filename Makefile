@@ -1,4 +1,5 @@
 CC=gcc
+CC_FLAGS=-m32
 RM=rm -f
 
 SRCS_CDCOMP=archive/software/cdcomp_patched.c
@@ -10,10 +11,10 @@ TARG_DETEST=detest
 all: cdcomp detest
 
 cdcomp: $(SRCS_CDCOMP)
-	$(CC) -o $(TARG_CDCOMP) $(SRCS_CDCOMP)
+	$(CC) $(CC_FLAGS) -o $(TARG_CDCOMP) $(SRCS_CDCOMP)
 
 detest: $(SRCS_DETEST)
-	$(CC) -o $(TARG_DETEST) $(SRCS_DETEST)
+	$(CC) $(CC_FLAGS) -o $(TARG_DETEST) $(SRCS_DETEST)
 
 clean:
 	$(RM) $(TARG_CDCOMP)
