@@ -294,7 +294,7 @@ public class Test{
 //      extern void decompress();
 //      extern void swapit();
       int  i,k,ifail;
-      swapit(hist);
+//      swapit(hist);
 //      decmpinit(hist);
       Decomp d = new Decomp(hist); // ADDITION
       ifail = 0;
@@ -322,33 +322,5 @@ public class Test{
     pgmOut.close();
     pgmTst.close();
     return ifail == 0;
-  }
-
-  /**
-   * swapit()
-   *
-   * This routine will swap bytes of the histogram integer long words for
-   * computer hardware which stores long words in "most significant byte order
-   * first" order. This is necessary because the DECOMPRESSION routines will
-   * automatically swap the byte order for this computer hardware.
-   *
-   * @param longwords The long words to have their order corrected.
-   * @return The corrected order of the long words.
-   **/
-  private static long[] swapit(long[] longwords){
-    int lw = 0;
-    for(int cnt = 512; cnt-- > 0;){
-      long l = longwords[lw];
-      int[] cp = new int[]{
-        (int)((l >> 24) & 0xFF),
-        (int)((l >> 16) & 0xFF),
-        (int)((l >>  8) & 0xFF),
-        (int)((l      ) & 0xFF)
-      };
-      long j = 0;
-      for(int i = 4; --i >= 0; j = (j << 8) | cp[i]);
-      longwords[lw++] = j;
-    }
-    return longwords;
   }
 }
