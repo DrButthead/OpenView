@@ -254,8 +254,7 @@ public class Decomp{
     int ip = 0;
     int op = 0;
     /* Make initial assignments */
-    byte odn = ibuf[ip++];
-    obuf[op++] = odn;
+    byte odn = obuf[op++] = ibuf[ip++];
     /* Decompress the input buffer */
     Node ptr = tree;
     /* Assign the first byte to the working variable, idn */
@@ -264,6 +263,7 @@ public class Decomp{
       for(int test = 0x80; test != 0; test >>= 1){
         /* If the result is 0, then go to right else go to left */
         ptr = (test & ibuf[ip]) != 0 ? ptr.left : ptr.right;
+        /* If we've not yet reached the end of the branch */
         if(ptr.dn != -1){
           /* Have we run out of output? */
           if(op >= nout){
