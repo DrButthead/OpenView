@@ -104,7 +104,7 @@ public class Decomp{
    **/
   private Node huffTree(long[] hist){
     /* Histogram frequency list */
-    long[] freqList = new long[512];
+    long[] freqList = new long[hist.length];
     /* Node array list */
     Node[] nodeList = new Node[freqList.length];
     /* Initialize array with numbers corresponding with the frequency list */
@@ -118,7 +118,7 @@ public class Decomp{
     /* Node list pointer */
     int np = 0;
     /* Miscellaneous counter */
-    int cnt = 512;
+    int cnt = hist.length;
     for(int numNodes = 1; cnt-- > 0; numNodes++){
       /* Pretend to "cast" long value to byte array */
       long l = hist[h++];
