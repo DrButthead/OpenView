@@ -190,7 +190,7 @@ public class IMQ{
     /* Ensure decompression has been done */
     if(img != null){
       /* TODO: Save the image to disk. */
-      Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 800, 800, 256); // TODO
+      Util.PGM pgmOut = new Util.PGM("test.pgm", 800, 800, 255); // TODO
       pgmOut.write(img); // TODO
       pgmOut.close(); // TODO
     }else{
