@@ -130,10 +130,10 @@ public class IMQ{
     byte[] histRaw = histTemp.getBytes();
     int x = 0;
     for(int i = 0; i < hist.length; i++){
-      hist[i] = ((int)histRaw[x++] & 0xFF)
-              | ((int)histRaw[x++] & 0xFF) <<  8
-              | ((int)histRaw[x++] & 0xFF) << 16
-              | ((int)histRaw[x++] & 0xFF) << 24;
+      hist[i] = ((long)histRaw[x++] & 0xFF)
+              | ((long)histRaw[x++] & 0xFF) <<  8
+              | ((long)histRaw[x++] & 0xFF) << 16
+              | ((long)histRaw[x++] & 0xFF) << 24;
     }
     /* Generate histogram */
     decomp = new Decomp(hist);
