@@ -68,6 +68,7 @@ public class Main{
       IMQ imq = new IMQ(input);
       imq.decompress();
       imq.save(input + "." + type, type);
+      imq.saveTable(input + ".txt");
     }else{
       System.err.println("(error) Need an input to continue execution");
     }

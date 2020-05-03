@@ -137,10 +137,6 @@ public class IMQ{
     }
     /* Generate histogram */
     decomp = new Decomp(hist);
-    /* TODO */
-    for(String k : config.keySet()){
-      System.out.println(k + " -> " + config.get(k));
-    }
   }
 
   /**
@@ -197,6 +193,26 @@ public class IMQ{
       Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 800, 800, 256); // TODO
       pgmOut.write(img); // TODO
       pgmOut.close(); // TODO
+    }else{
+      System.err.println("(error) Image must be decompressed first");
+    }
+  }
+
+  /**
+   * saveTable()
+   *
+   * Save the image table to disk.
+   *
+   * @param filename The name of the image file (including the expected
+   * extension for the image type).
+   **/
+  public void saveTable(String filename){
+    /* Ensure decompression has been done */
+    if(img != null){
+      /* TODO: Save the table to disk. */
+      for(String k : config.keySet()){
+        System.out.println(k + " -> " + config.get(k));
+      }
     }else{
       System.err.println("(error) Image must be decompressed first");
     }
