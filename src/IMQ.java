@@ -170,9 +170,9 @@ public class IMQ{
         /* Read next line */
         byte[] lin = readVar().getBytes();
         /*  Decompress the line */
-        byte[] lout = decomp.decompress(lin, lin.length, width);
+        byte[] lout = decomp.decompress(lin, lin.length, recordBytes);
         /* Copy into image buffer */
-        System.arraycopy(lout, 0, img, line * width, lout.length);
+        System.arraycopy(lout, 0, img, line * width, width);
       }
     }
   }
