@@ -122,11 +122,11 @@ public class Decomp{
     for(int numNodes = 1; cnt-- > 0; numNodes++){
       /* Pretend to "cast" long value to byte array */
       long l = hist[h++];
-      int[] cp = new int[]{
-        (int)((l      ) & 0xFF),
-        (int)((l >>  8) & 0xFF),
-        (int)((l >> 16) & 0xFF),
-        (int)((l >> 24) & 0xFF)
+      long[] cp = new long[]{
+        (long)((l      ) & 0xFF),
+        (long)((l >>  8) & 0xFF),
+        (long)((l >> 16) & 0xFF),
+        (long)((l >> 24) & 0xFF)
       };
       /* Reverse the 4 bytes */
       long j = 0;
