@@ -16,9 +16,12 @@ public class IMQ{
   private HashMap<String, String> config;
   private long[] hist;
   private Decomp decomp;
-  private byte[] raw;
-  private byte[] img;
-  private int imgSize;
+  private byte[] file;
+  private int ptr;
+  private int[] img;
+  private int width;
+  private int height;
+  private int recordBytes;
 
   /**
    * IMQ()
@@ -32,12 +35,10 @@ public class IMQ{
     config = new HashMap<String, String>();
     hist = null;
     decomp = null;
-    raw = null;
     img = null;
-    imgSize = -1;
     /* Read the file into byte array */
     Path path = Paths.get(filename);
-    byte[] file = null;
+    file = null;
     try{
       file = Files.readAllBytes(path);
     }catch(IOException e){
@@ -46,15 +47,15 @@ public class IMQ{
     /* Read variables from header */
     boolean header = true;
     String obj = "";
-    for(int x = 0; x < file.length && header; x++){
+    for(ptr = 0; ptr < file.length && header; ptr++){
       /* TODO: Remove hack array skipping. */
-      if(file[x] == 0){
-        ++x;
+      if(file[ptr] == 0){
+        ++ptr;
       }
       /* Read next variable */
-      int len = file[x] | (file[x + 1] << 8);
-      String str = new String(file, x + 2, len);
-      x += len + 1;
+      int len = file[ptr] | (file[ptr + 1] << 8);
+      String str = new String(file, ptr + 2, len);
+      ptr += len + 1;
       str.trim();
       /* Check for special cases */
       switch(str){
@@ -91,6 +92,37 @@ public class IMQ{
           break;
       }
     }
+    /* Assert we understand the type */
+    if(!config.get("IMAGE.SAMPLE_TYPE").equals("UNSIGNED_INTEGER")){
+      System.err.println("(error) Unknown image sample type");
+    }
+    if(!config.get("ENCODING_HISTOGRAM.ITEM_TYPE").equals("VAX_INTEGER")){
+      System.err.println("(error) Unknown encoding histogram item type");
+    }
+    if(!config.get("IMAGE_HISTOGRAM.ITEM_TYPE").equals("VAX_INTEGER")){
+      System.err.println("(error) Unknown image histogram image type");
+    }
+    if(!config.get("IMAGE.ENCODING_TYPE").equals("HUFFMAN_FIRST_DIFFERENCE")){
+      System.err.println("(error) Unknown image encoding type");
+    }
+    if(!config.get("IMAGE_HISTOGRAM.ITEMS").equals("256")){
+      System.err.println("(error) Unknown image histogram items");
+    }
+    if(!config.get("IMAGE.SAMPLE_BITS").equals("8")){
+      System.err.println("(error) Unknown image sample bits");
+    }
+    int histBits = Integer.parseInt(config.get("IMAGE_HISTOGRAM.ITEM_BITS"));
+    if(histBits <= 0 || histBits % 8 != 0){
+      System.err.println("(error) Unknown histogram data type");
+    }
+    int histBytes = histBits / 8;
+    /* Pull out required variables from engineering tables */
+    width = Integer.parseInt(config.get("IMAGE.LINE_SAMPLES"));
+    height = Integer.parseInt(config.get("IMAGE.LINES"));
+    recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
+    /* Initialize variables to be used */
+    hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS"))];
+    img = new int[width * height];
     /* TODO */
     for(String k : config.keySet()){
       System.out.println(k + " -> " + config.get(k));
@@ -105,13 +137,7 @@ public class IMQ{
   public void decompress(){
     /* Don't double decompress */
     if(decomp == null){
-      /* Check we have the requirements */
-      if(hist != null && raw != null && imgSize >= 0){
-        /* Initialise the decompression */
-        decomp = new Decomp(hist);
-        /* Decompress the image */
-        img = decomp.decompress(raw, raw.length, imgSize);
-      }
+      /* TODO: Check we have the requirements. */
     }
   }
 
