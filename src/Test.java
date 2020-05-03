@@ -287,8 +287,8 @@ public class Test{
    **/
   public static boolean test(){
     byte[] lin_out = null;
-    Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 44, 38, 256);
-    Util.PGM pgmTst = new Util.PGM("test-lin-tst.pgm", 44, 38, 256);
+    Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 40, 40, 255);
+    Util.PGM pgmTst = new Util.PGM("test-lin-tst.pgm", 40, 40, 255);
     /*---- Edited original source (below) ----*/
 //      extern void decmpinit();
 //      extern void decompress();
