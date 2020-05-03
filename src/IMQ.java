@@ -166,6 +166,8 @@ public class IMQ{
   public void decompress(){
     /* Don't double decompress */
     if(decomp != null){
+      /* TODO: Figure out what this data is. */
+      readVar();
       /* TODO: Check we have the requirements. */
       /* Pull out lines from file */
       for(int line = 0; ptr < file.length && line < height; line++){
