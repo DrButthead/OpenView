@@ -18,7 +18,7 @@ public class IMQ{
   private Decomp decomp;
   private byte[] file;
   private int ptr;
-  private int[] img;
+  private byte[] img;
   private int width;
   private int height;
   private int recordBytes;
@@ -47,16 +47,10 @@ public class IMQ{
     /* Read variables from header */
     boolean header = true;
     String obj = "";
-    for(ptr = 0; ptr < file.length && header; ptr++){
-      /* TODO: Remove hack array skipping. */
-      if(file[ptr] == 0){
-        ++ptr;
-      }
-      /* Read next variable */
-      int len = file[ptr] | (file[ptr + 1] << 8);
-      String str = new String(file, ptr + 2, len);
-      ptr += len + 1;
+    for(ptr = 0; ptr < file.length && header;){
+      String str = readVar();
       str.trim();
+      str = str.replace("\0", "");
       /* Check for special cases */
       switch(str){
         case "END" :
@@ -122,23 +116,46 @@ public class IMQ{
     recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
     /* Initialize variables to be used */
     hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS"))];
-    img = new int[width * height];
+    img = new byte[width * height];
+    /* TODO: Figure out what this data is. */
+    readVar();
+    readVar();
     /* Pull out histogram */
-    for(int x = 0; ptr < file.length && x < hist.length; x++){
-      hist[x] = ((((int)file[ptr    ]) & 0xFF) << 24)
-              | ((((int)file[ptr + 1]) & 0xFF) << 16)
-              | ((((int)file[ptr + 2]) & 0xFF) <<  8)
-              | ((((int)file[ptr + 3]) & 0xFF)      );
-      System.out.println(hist[x]); // TODO
-      ptr += histBytes;
+    String histTemp = "";
+    while(ptr < file.length && histTemp.length() < hist.length * histBytes){
+      String temp = readVar();
+      histTemp += temp;
+    }
+    /* Fill Histogram array */
+    byte[] histRaw = histTemp.getBytes();
+    int x = 0;
+    for(int i = 0; i < hist.length; i++){
+      hist[i] = ((int)histRaw[x++] & 0xFF)
+              | ((int)histRaw[x++] & 0xFF) <<  8
+              | ((int)histRaw[x++] & 0xFF) << 16
+              | ((int)histRaw[x++] & 0xFF) << 24;
     }
     /* Generate histogram */
     decomp = new Decomp(hist);
-    /* TODO: Read raw data from image. */
     /* TODO */
     for(String k : config.keySet()){
       System.out.println(k + " -> " + config.get(k));
     }
+  }
+
+  /**
+   * readVar()
+   *
+   * Read the next variable from the input file.
+   *
+   * @return The variable read from the array.
+   **/
+  private String readVar(){
+    int len = ((int)file[ptr++] & 0xFF) | ((int)(file[ptr++] & 0xFF) << 8);
+    len = len + (1 * len % 2);
+    String str = new String(file, ptr, len);
+    ptr += len;
+    return str;
   }
 
   /**
@@ -148,8 +165,17 @@ public class IMQ{
    **/
   public void decompress(){
     /* Don't double decompress */
-    if(decomp == null){
+    if(decomp != null){
       /* TODO: Check we have the requirements. */
+      /* Pull out lines from file */
+      for(int line = 0; ptr < file.length && line < height; line++){
+        /* Read next line */
+        byte[] lin = readVar().getBytes();
+        /*  Decompress the line */
+        byte[] lout = decomp.decompress(lin, lin.length, width);
+        /* Copy into image buffer */
+        System.arraycopy(lout, 0, img, line * width, lout.length);
+      }
     }
   }
 
@@ -166,6 +192,9 @@ public class IMQ{
     /* Ensure decompression has been done */
     if(img != null){
       /* TODO: Save the image to disk. */
+      Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 800, 800, 256); // TODO
+      pgmOut.write(img); // TODO
+      pgmOut.close(); // TODO
     }else{
       System.err.println("(error) Image must be decompressed first");
     }
