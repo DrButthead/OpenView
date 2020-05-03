@@ -117,9 +117,9 @@ public class IMQ{
     /* Initialize variables to be used */
     hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS"))];
     img = new byte[width * height];
-    /* TODO: Figure out what this data is. */
-    readVar();
-    readVar();
+    /* TODO: Figure out what to do with the image histogram. */
+    System.out.println("(internal) Skipping " + readVar().length() + " bytes");
+    System.out.println("(internal) Skipping " + readVar().length() + " bytes");
     /* Pull out histogram */
     String histTemp = "";
     while(ptr < file.length && histTemp.length() < hist.length * histBytes){
@@ -166,8 +166,8 @@ public class IMQ{
   public void decompress(){
     /* Don't double decompress */
     if(decomp != null){
-      /* TODO: Figure out what this data is. */
-      readVar();
+      /* TODO: Figure out what to do with the engineering summary. */
+      System.out.println("(internal) Skipping " + readVar().length() + " bytes");
       /* TODO: Check we have the requirements. */
       /* Pull out lines from file */
       for(int line = 0; ptr < file.length && line < height; line++){
