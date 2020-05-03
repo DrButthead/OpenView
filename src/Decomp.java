@@ -123,10 +123,10 @@ public class Decomp{
       /* Pretend to "cast" long value to byte array */
       long l = hist[h++];
       int[] cp = new int[]{
-        (int)((l >> 24) & 0xFF),
-        (int)((l >> 16) & 0xFF),
+        (int)((l      ) & 0xFF),
         (int)((l >>  8) & 0xFF),
-        (int)((l      ) & 0xFF)
+        (int)((l >> 16) & 0xFF),
+        (int)((l >> 24) & 0xFF)
       };
       /* Reverse the 4 bytes */
       long j = 0;
