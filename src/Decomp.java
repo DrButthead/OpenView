@@ -162,7 +162,7 @@ public class Decomp{
       nodeList[t] = new Node(-1);
       nodeList[t].right = nodeList[np++];
       nodeList[t].left = nodeList[np];
-      np = t;
+      nodeList[np] = nodeList[t];
       freqList[fp + 1] = freqList[fp + 1] + freqList[fp];
       freqList[fp++] = 0;
       res = sortFreq(freqList, nodeList, fp, np, numFreq);
