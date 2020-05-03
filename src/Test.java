@@ -286,6 +286,7 @@ public class Test{
    * @return True if tests pass, otherwise false.
    **/
   public static boolean test(){
+    byte[] line = new byte[800];
     byte[] lin_out = null;
     Util.PGM pgmOut = new Util.PGM("test-lin-out.pgm", 40, 40, 255);
     Util.PGM pgmTst = new Util.PGM("test-lin-tst.pgm", 40, 40, 255);
@@ -302,8 +303,10 @@ public class Test{
       {
 //         decompress(lin_in,lin_out,&len_in,&len_out);
          lin_out = d.decompress(Util.charArrByte(lin_in), len_in, len_out); // ADDITION
-         pgmOut.write(lin_out); // ADDITION
-         pgmTst.write(lin_tst); // ADDITION
+         System.arraycopy(lin_out, 0, line, 0, line.length); // ADDITION
+         pgmOut.write(line); // ADDITION
+         System.arraycopy(Util.charArrByte(lin_tst), 0, line, 0, line.length); // ADDITION
+         pgmTst.write(line); // ADDITION
          for (i=0; i<836; ++i)
          {
 //         if (lin_out[i] != lin_tst[i])
