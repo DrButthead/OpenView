@@ -123,6 +123,18 @@ public class IMQ{
     /* Initialize variables to be used */
     hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS"))];
     img = new int[width * height];
+    /* Pull out histogram */
+    for(int x = 0; ptr < file.length && x < hist.length; x++){
+      hist[x] = ((((int)file[ptr    ]) & 0xFF) << 24)
+              | ((((int)file[ptr + 1]) & 0xFF) << 16)
+              | ((((int)file[ptr + 2]) & 0xFF) <<  8)
+              | ((((int)file[ptr + 3]) & 0xFF)      );
+      System.out.println(hist[x]); // TODO
+      ptr += histBytes;
+    }
+    /* Generate histogram */
+    decomp = new Decomp(hist);
+    /* TODO: Read raw data from image. */
     /* TODO */
     for(String k : config.keySet()){
       System.out.println(k + " -> " + config.get(k));
