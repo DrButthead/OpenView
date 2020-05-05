@@ -1,10 +1,13 @@
 package b.ov;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
 
 /**
  * IMQ.java
@@ -165,7 +168,6 @@ public class IMQ{
     if(decomp != null){
       /* TODO: Figure out what to do with the engineering summary. */
       System.out.println("(internal) Skipping " + readVar().length + " bytes");
-      /* TODO: Check we have the requirements. */
       /* Pull out lines from file */
       for(int line = height - 1; ptr < file.length && line >= 0; line--){
         /* Read next line */
@@ -190,10 +192,27 @@ public class IMQ{
   public void save(String filename, String type){
     /* Ensure decompression has been done */
     if(img != null){
-      /* TODO: Save the image to disk. */
-      Util.PGM pgmOut = new Util.PGM("test.pgm", 800, 800, 255); // TODO
-      pgmOut.write(img); // TODO
-      pgmOut.close(); // TODO
+      /* Create a buffered image containing the data */
+      BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+      for(int y = 0; y < height; y++){
+        for(int x = 0; x < width; x++){
+          bi.setRGB(
+            x,
+            y,
+            0xFF                               << 24 |
+            ((int)img[x + (y * width)] & 0xFF) << 16 |
+            ((int)img[x + (y * width)] & 0xFF) << 8  |
+            ((int)img[x + (y * width)] & 0xFF)
+          );
+        }
+      }
+      /* Save the image to disk */
+      File f = new File(filename);
+      try{
+        ImageIO.write(bi, type, f);
+      }catch(IOException e){
+        System.err.println("(error) Unable to save image");
+      }
     }else{
       System.err.println("(error) Image must be decompressed first");
     }
