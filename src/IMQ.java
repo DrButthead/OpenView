@@ -167,7 +167,7 @@ public class IMQ{
       System.out.println("(internal) Skipping " + readVar().length + " bytes");
       /* TODO: Check we have the requirements. */
       /* Pull out lines from file */
-      for(int line = 0; ptr < file.length && line < height; line++){
+      for(int line = height - 1; ptr < file.length && line >= 0; line--){
         /* Read next line */
         byte[] lin = readVar();
         /*  Decompress the line */
