@@ -615,9 +615,9 @@ union /* this union is used to swap 16 and 32 bit integers          */
      case 1: /*******************************************************/
              /* IBM PC host                                         */
              /*******************************************************/
-       length = 0;
-       result = read(infile,&length,2);
-       nlen =   read(infile,ibuf,length+(1*length%2));
+       result = fread(ibuf, 1, 2, infile);
+       length = (((int)ibuf[0]) & 0xFF) | (((int)(ibuf[1]) & 0xFF) << 8);
+       nlen = fread(ibuf, 1, length + (1 * length % 2), infile);
        return (length);
        break;
 
