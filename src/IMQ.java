@@ -229,9 +229,16 @@ public class IMQ{
   public void saveTable(String filename){
     /* Ensure decompression has been done */
     if(img != null){
-      /* TODO: Save the table to disk. */
+      /* Generate an output file */
+      String temp = "";
       for(String k : config.keySet()){
-        System.out.println(k + " -> " + config.get(k));
+        temp += k + "=" + config.get(k) + "\n";
+      }
+      /* Save the table to disk */
+      try{
+        Files.write(Paths.get(filename), temp.getBytes());
+      }catch(IOException e){
+        System.err.println("(error) Unable to save engineering table to disk");
       }
     }else{
       System.err.println("(error) Image must be decompressed first");
