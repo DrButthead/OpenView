@@ -679,7 +679,7 @@ union /* this union is used to swap 16 and 32 bit integers          */
 
 int check_host()
 {
-  int host = -1;
+  int host = 1;
   return(host);
 }
 
