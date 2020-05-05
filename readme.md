@@ -12,10 +12,22 @@ sure of what you are running. By writing an open source Java implementation,
 all machines with a JVM should be able to run the program and perform
 bug-fixes/extensions where required.
 
+# Building
+
+You'll need Java 7 or above and [Apache Ant](http://ant.apache.org/). Then you
+can simply run:
+
+```
+ant
+```
+
+You should see `BUILD SUCCESSFUL` if all went well.
+
 # Example Usage
 
-The following is an example of how to convert a IMQ Voyager image to a PNG with
-engineering information:
+The following is an example of how to convert an
+[IMQ Voyager image](archive/images/c3495731.imq) to a PNG with engineering
+information:
 
 ```
 java -jar dist/openview.jar -i archive/images/c3495731.imq -o saturn.png -f json
