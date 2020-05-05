@@ -7,6 +7,7 @@ package b.ov;
  **/
 public class Main{
   private String input;
+  private String output;
   private String type;
 
   /**
@@ -35,6 +36,7 @@ public class Main{
     }
     /* Setup default global variables */
     input = null;
+    output = null;
     type = "png";
     /* Parse command line parameters */
     for(int x = 0; x < args.length; x++){
@@ -47,6 +49,10 @@ public class Main{
         case "-i" :
         case "--input" :
           x = input(args, x);
+          break;
+        case "-o" :
+        case "--output" :
+          x = output(args, x);
           break;
         case "-t" :
         case "--type" :
@@ -65,10 +71,14 @@ public class Main{
     }
     /* Check if we want to perform a conversion */
     if(input != null){
+      /* Set an output if one not defined */
+      if(output == null){
+        output = input + "." + type;
+      }
       IMQ imq = new IMQ(input);
       imq.decompress();
-      imq.save(input + "." + type, type);
-      imq.saveTable(input + ".txt");
+      imq.save(output, type);
+      imq.saveTable(output + ".txt");
     }else{
       System.err.println("(error) Need an input to continue execution");
     }
@@ -88,12 +98,14 @@ public class Main{
     System.out.println("");
     System.out.println("  OPTions");
     System.out.println("");
-    System.out.println("    -h  --help   Display this help");
-    System.out.println("    -i  --input  Input a file to be converted");
-    System.out.println("                   <FILE> Compressed IMQ file");
-    System.out.println("    -t  --type   Output image type");
-    System.out.println("                   <TYPE> 'jpg' or 'png'");
-    System.out.println("    -z  --test   Perform internal checks");
+    System.out.println("    -h  --help    Display this help");
+    System.out.println("    -i  --input   Input a file to be converted");
+    System.out.println("                    <FILE> Compressed IMQ file");
+    System.out.println("    -o  --output  Output filename for image");
+    System.out.println("                    <FILE> The desired image name");
+    System.out.println("    -t  --type    Output image type");
+    System.out.println("                    <TYPE> 'jpg' or 'png'");
+    System.out.println("    -z  --test    Perform internal checks");
     System.out.println("");
     System.out.println("  Usage");
     System.out.println("");
@@ -119,6 +131,25 @@ public class Main{
     }
     ++x;
     input = args[x];
+    return x;
+  }
+
+  /**
+   * output()
+   *
+   * Get an output file.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int output(String[] args, int x){
+    if(x + 1 >= args.length){
+      System.err.println("(error) No output file given");
+      System.exit(0);
+    }
+    ++x;
+    output = args[x];
     return x;
   }
 
