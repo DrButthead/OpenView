@@ -1,7 +1,9 @@
 *.class
 *.jar
 *.pgm
+*.png
 *.swp
+*.txt
 
 cdcomp
 detest
