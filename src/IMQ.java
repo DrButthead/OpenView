@@ -115,7 +115,7 @@ public class IMQ{
     height = Integer.parseInt(config.get("IMAGE.LINES"));
     recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
     /* Initialize variables to be used */
-    hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS"))];
+    hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS")) + 1];
     img = new byte[width * height];
     /* TODO: Figure out what to do with the image histogram. */
     System.out.println("(internal) Skipping " + readVar().length + " bytes");
