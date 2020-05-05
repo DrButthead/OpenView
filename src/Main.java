@@ -6,6 +6,7 @@ package b.ov;
  * Parse the command line arguments are start execution as required.
  **/
 public class Main{
+  private String format;
   private String input;
   private String output;
   private String type;
@@ -35,12 +36,17 @@ public class Main{
       System.exit(0);
     }
     /* Setup default global variables */
+    format = "prop";
     input = null;
     output = null;
     type = "png";
     /* Parse command line parameters */
     for(int x = 0; x < args.length; x++){
       switch(args[x]){
+        case "-f" :
+        case "--format" :
+          x = format(args, x);
+          break;
         case "-h" :
         case "--help" :
           x = help(args, x);
@@ -78,10 +84,40 @@ public class Main{
       IMQ imq = new IMQ(input);
       imq.decompress();
       imq.save(output, type);
-      imq.saveTable(output + ".txt");
+      imq.saveTable(output + ".txt", format);
     }else{
       System.err.println("(error) Need an input to continue execution");
     }
+  }
+
+  /**
+   * format()
+   *
+   * Get the engineering data format.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int format(String[] args, int x){
+    if(x + 1 >= args.length){
+      System.err.println("(error) No input file given");
+      System.exit(0);
+    }
+    ++x;
+    format = args[x];
+    /* Sanity check it */
+    switch(format){
+      case "none" :
+      case "prop" :
+      case "json" :
+        /* Do nothing */
+        break;
+      default :
+        System.err.println("(error) Unsupported format '" + format + "'");
+        break;
+    }
+    return x;
   }
 
   /**
@@ -99,6 +135,8 @@ public class Main{
     System.out.println("  OPTions");
     System.out.println("");
     System.out.println("    -h  --help    Display this help");
+    System.out.println("    -f  --format  Format of engineering table");
+    System.out.println("                    <FORMAT> 'none' 'prop' 'json'");
     System.out.println("    -i  --input   Input a file to be converted");
     System.out.println("                    <FILE> Compressed IMQ file");
     System.out.println("    -o  --output  Output filename for image");

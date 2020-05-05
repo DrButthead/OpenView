@@ -225,14 +225,31 @@ public class IMQ{
    *
    * @param filename The name of the image file (including the expected
    * extension for the image type).
+   * @param format The desired output format.
    **/
-  public void saveTable(String filename){
+  public void saveTable(String filename, String format){
     /* Ensure decompression has been done */
-    if(img != null){
+    if(img != null && format != null && format != "none"){
       /* Generate an output file */
       String temp = "";
-      for(String k : config.keySet()){
-        temp += k + "=" + config.get(k) + "\n";
+      switch(format){
+        case "prop" :
+          for(String k : config.keySet()){
+            temp += k + "=" + config.get(k) + "\n";
+          }
+          break;
+        case "json" :
+          temp += "{\n";
+          String[] keys = config.keySet().toArray(new String[config.size()]);
+          for(int x = 0; x < keys.length; x++){
+            temp += "  \"" + keys[x] + "\":\"" + config.get(keys[x]) + "\"";
+            temp += x < keys.length - 1 ? ",\n" : "\n";
+          }
+          temp += "}";
+          break;
+        default :
+          System.err.println("(internal) Bad format slipped through");
+          break;
       }
       /* Save the table to disk */
       try{
