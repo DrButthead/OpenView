@@ -48,7 +48,7 @@ public class IMQ{
     boolean header = true;
     String obj = "";
     for(ptr = 0; ptr < file.length && header;){
-      String str = readVar();
+      String str = new String(readVar());
       str.trim();
       str = str.replace("\0", "");
       /* Check for special cases */
@@ -118,16 +118,16 @@ public class IMQ{
     hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS"))];
     img = new byte[width * height];
     /* TODO: Figure out what to do with the image histogram. */
-    System.out.println("(internal) Skipping " + readVar().length() + " bytes");
-    System.out.println("(internal) Skipping " + readVar().length() + " bytes");
+    System.out.println("(internal) Skipping " + readVar().length + " bytes");
+    System.out.println("(internal) Skipping " + readVar().length + " bytes");
     /* Pull out histogram */
-    String histTemp = "";
-    while(ptr < file.length && histTemp.length() < hist.length * histBytes){
-      String temp = readVar();
-      histTemp += temp;
+    byte[] histRaw = new byte[hist.length * histBytes];
+    byte[] t = new byte[0];
+    for(int x = 0; ptr < file.length && x < histRaw.length - histBytes; x += t.length){
+      t = readVar();
+      System.arraycopy(t, 0, histRaw, x, t.length);
     }
     /* Fill Histogram array */
-    byte[] histRaw = histTemp.getBytes();
     int x = 0;
     for(int i = 0; i < hist.length; i++){
       hist[i] = (((long)histRaw[x++] & 0xFF)      )
@@ -146,12 +146,13 @@ public class IMQ{
    *
    * @return The variable read from the array.
    **/
-  private String readVar(){
+  private byte[] readVar(){
     int len = (((int)file[ptr++]) & 0xFF) | (((int)(file[ptr++]) & 0xFF) << 8);
     len = len + (1 * len % 2);
-    String str = new String(file, ptr, len);
+    byte[] b = new byte[len];
+    System.arraycopy(file, ptr, b, 0, len);
     ptr += len;
-    return str;
+    return b;
   }
 
   /**
@@ -163,12 +164,12 @@ public class IMQ{
     /* Don't double decompress */
     if(decomp != null){
       /* TODO: Figure out what to do with the engineering summary. */
-      System.out.println("(internal) Skipping " + readVar().length() + " bytes");
+      System.out.println("(internal) Skipping " + readVar().length + " bytes");
       /* TODO: Check we have the requirements. */
       /* Pull out lines from file */
       for(int line = 0; ptr < file.length && line < height; line++){
         /* Read next line */
-        byte[] lin = readVar().getBytes();
+        byte[] lin = readVar();
         /*  Decompress the line */
         byte[] lout = decomp.decompress(lin, lin.length, recordBytes);
         /* Copy into image buffer */
