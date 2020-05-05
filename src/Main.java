@@ -207,13 +207,14 @@ public class Main{
     }
     ++x;
     type = args[x];
+    /* Sanity check it */
     switch(type){
       case "jpg" :
       case "png" :
+        /* Do nothing */
         break;
       default :
-        System.err.println("(error) Image format unsupported '" + type + "'");
-        System.exit(0);
+        System.err.println("(error) Unsupported type '" + type + "'");
         break;
     }
     return x;
