@@ -52,10 +52,6 @@
 #define FALSE                 0
 #define RECORD_BYTES        836
 
-                                    /* pc i/o defines               */
-#define O_RDONLY         0x0000     /* open for reading only        */
-#define O_BINARY         0x8000     /* file mode is binary          */
-
                                     /* vax i/o defines              */
 #define RECORD_TYPE      "rfm=fix"  /* VAX fixed length output      */
 #define CTX              "ctx=bin"  /* no translation of \n         */
@@ -89,7 +85,7 @@ void               decmpinit();
 
 /* global variables                                                 */
 
-int                infile;
+FILE               *infile;
 FILE               *outfile;
 int                output_format;
 
@@ -246,7 +242,7 @@ short   shortint;
   gets (inname);
   if (host == 1)
     {
-     if ((infile = open(inname,O_RDONLY | O_BINARY)) <= 0)
+     if ((infile = fopen(inname, "rb")) == NULL)
        {
         printf("\ncan't open input file: %s\n",inname);
         exit(1);
@@ -254,7 +250,7 @@ short   shortint;
     }
   else if (host == 2 | host == 3 | host == 5)
     {
-     if ((infile = open(inname,O_RDONLY)) <= 0)
+     if ((infile = fopen(inname, "r")) <= 0)
        {
         printf("\ncan't open input file: %s\n",inname);
         exit(1);
