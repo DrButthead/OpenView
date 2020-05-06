@@ -228,6 +228,10 @@ public class IMQ{
     if(decomp != null){
       /* TODO: Figure out what to do with the engineering summary. */
       System.out.println("(internal) Skipping " + readVar().length + " bytes");
+      /* Store some data encase of recovering */
+      int ptrImg = ptr;
+      int lenSum = 0;
+      int lenCnt = 0;
       /* Pull out lines from file */
       long[] realHist = new long[imgHist.length];
       for(int line = height - 1; ptr < file.length && line >= 0; line--){
@@ -241,6 +245,11 @@ public class IMQ{
         for(int x = 0; x < width; x++){
           ++realHist[(int)lout[x] & 0xFF];
         }
+        /* Update statistics */
+        if(recover){
+          lenSum += lin.length;
+          ++lenCnt;
+        }
       }
       /* Check that output histograms match */
       boolean match = true;
@@ -248,11 +257,65 @@ public class IMQ{
         match &= realHist[x] == imgHist[x];
       }
       if(!match){
-        System.err.println("(error) Issues when decoding image");
+        System.err.println("(error) Image didn't match the histogram");
         /* If set, attempt recovery */
         if(recover){
           System.out.println("Attempting image recovery...");
-          /* TODO: Write the recovery. */
+          int lenAvg = lenSum / lenCnt;
+          int[] bad = new int[height];
+          /* Pre-search for bad lines */
+          ptr = ptrImg;
+          for(int line = height - 1; ptr < file.length && line >= 0; line--){
+            /* Read next line */
+            byte[] lin = readVar();
+            /* Check lines lines */
+            bad[line] = 0;
+            if(lin.length < lenAvg / 1.5){
+              bad[line] = -lin.length;
+            }
+            if(lin.length > lenAvg * 1.5){
+              bad[line] = lin.length;
+            }
+          }
+          /* Attempt some form of recovery */
+          for(int line = height - 1; line >= 0; line--){
+            /* Check if this line needs an edit */
+            if(bad[line] == 0){
+              continue;
+            }
+            boolean corrupt = false;
+            /* Blur lines */
+            for(int x = 0; x < width; x++){
+              int avg = 0;
+              int cnt = 0;
+              for(int y = line - 1; y >= 0; y--){
+                int p = (int)img[x + (y * width)] & 0xFF;
+                if(bad[y] == 0){
+                  avg += p;
+                  ++cnt;
+                  break;
+                }
+              }
+              for(int y = line + 1; y < height; y++){
+                int p = (int)img[x + (y * width)] & 0xFF;
+                if(bad[y] == 0){
+                  avg += p;
+                  ++cnt;
+                  break;
+                }
+              }
+              /* Check if we actually can blur */
+              if(cnt > 0){
+                avg /= cnt;
+                int p = (int)img[x + (line * width)] & 0xFF;
+                /* Check if it's close */
+                if(corrupt || bad[line] < 0 || p < avg * 0.5 || p > avg * 1.5){
+                  img[x + (line * width)] = (byte)avg;
+                  corrupt = true;
+                }
+              }
+            }
+          }
         }
       }
     }
