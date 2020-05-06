@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.NumberFormatException;
+import java.nio.file.attribute.FileTime;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.format.DateTimeParseException;
+import java.time.Instant;
 
 /**
  * Util.java
@@ -246,6 +252,50 @@ public class Util{
             .replace("\f", "\\f")
             .replace("\'", "\\'")
             .replace("\"", "\\\"");
+  }
+
+  /**
+   * parseFileTime()
+   *
+   * Convert a given date String into a FileTime object.
+   *
+   * @param date The date string.
+   * @return The converted FileTime, otherwise the current time.
+   **/
+  public static FileTime parseFileTime(String date){
+    try{
+      return FileTime.from(Instant.parse(date));
+    }catch(DateTimeParseException e){
+      /* Do nothing */
+    }
+    /* Failed, so just return the current time */
+    return FileTime.from(Instant.now());
+  }
+
+  /**
+   * setFileProperties()
+   *
+   * Set various file properties for a given file.
+   *
+   * @param file The file to be adjusted.
+   * @param lastMod The instant the file was last modified.
+   * @param lastAcc The instant the file was last accessed.
+   * @param create The instant the file was created.
+   **/
+  public static void setFileProperties(
+    String file,
+    FileTime lastMod,
+    FileTime lastAcc,
+    FileTime create
+  ){
+    Path path = Paths.get(file);
+    try{
+      Files.setAttribute(path, "lastModifiedTime", lastMod);
+      Files.setAttribute(path, "lastAccessTime", lastAcc);
+      Files.setAttribute(path, "creationTime", create);
+    }catch(IOException e){
+      System.err.println("(error) Date properties could not be set");
+    }
   }
 
   /**
