@@ -1,5 +1,7 @@
 package b.ov;
 
+import java.util.ArrayList;
+
 /**
  * Main.java
  *
@@ -7,8 +9,8 @@ package b.ov;
  **/
 public class Main{
   private String format;
-  private String input;
-  private String output;
+  private ArrayList<String> input;
+  private ArrayList<String> output;
   private boolean recover;
   private String type;
 
@@ -37,9 +39,9 @@ public class Main{
       System.exit(0);
     }
     /* Setup default global variables */
-    format = "prop";
-    input = null;
-    output = null;
+    format = "json";
+    input = new ArrayList<String>();
+    output = new ArrayList<String>();
     recover = false;
     type = "png";
     /* Parse command line parameters */
@@ -82,15 +84,21 @@ public class Main{
       }
     }
     /* Check if we want to perform a conversion */
-    if(input != null){
-      /* Set an output if one not defined */
-      if(output == null){
-        output = input + "." + type;
+    if(input.size() > 0){
+      /* Loop over the inputs */
+      for(int x = 0; x < input.size(); x++){
+        String out = null;
+        /* Set an output if one not defined */
+        if(output.size() > x){
+          out = output.get(x);
+        }else{
+          out = input.get(x) + "." + type;
+        }
+        IMQ imq = new IMQ(input.get(x));
+        imq.decompress(recover);
+        imq.save(out, type);
+        imq.saveTable(out + ".txt", format);
       }
-      IMQ imq = new IMQ(input);
-      imq.decompress(recover);
-      imq.save(output, type);
-      imq.saveTable(output + ".txt", format);
     }else{
       System.err.println("(error) Need an input to continue execution");
     }
@@ -170,13 +178,10 @@ public class Main{
    * @return New offset into parameters.
    **/
   private int input(String[] args, int x){
-    if(x + 1 >= args.length){
-      System.err.println("(error) No input file given");
-      System.exit(0);
+    while(args[++x].charAt(0) != '-'){
+      input.add(args[x]);
     }
-    ++x;
-    input = args[x];
-    return x;
+    return x - 1;
   }
 
   /**
@@ -189,13 +194,10 @@ public class Main{
    * @return New offset into parameters.
    **/
   private int output(String[] args, int x){
-    if(x + 1 >= args.length){
-      System.err.println("(error) No output file given");
-      System.exit(0);
+    while(args[++x].charAt(0) != '-'){
+      output.add(args[x]);
     }
-    ++x;
-    output = args[x];
-    return x;
+    return x - 1;
   }
 
   /**
