@@ -117,21 +117,20 @@ public class IMQ{
     /* Pull out required variables from engineering tables */
     width = Integer.parseInt(config.get("IMAGE.LINE_SAMPLES"));
     height = Integer.parseInt(config.get("IMAGE.LINES"));
-    recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
-    /* Initialize variables to be used */
-    encHist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS")) + 1];
     img = new byte[width * height];
+    recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
     /* TODO: Figure out what to do with the image histogram. */
     System.out.println("(internal) Skipping " + readVar().length + " bytes");
     System.out.println("(internal) Skipping " + readVar().length + " bytes");
-    /* Pull out histogram */
+    /* Pull out encoding histogram */
+    encHist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS")) + 1];
     byte[] encHistRaw = new byte[encHist.length * encHistBytes];
     byte[] t = new byte[0];
     for(int x = 0; ptr < file.length && x < encHistRaw.length - encHistBytes; x += t.length){
       t = readVar();
       System.arraycopy(t, 0, encHistRaw, x, t.length);
     }
-    /* Fill Histogram array */
+    /* Fill encoding histogram array */
     int x = 0;
     for(int i = 0; i < encHist.length; i++){
       encHist[i] = (((long)encHistRaw[x++] & 0xFF)      )
