@@ -181,10 +181,10 @@ public class Main{
    * @return New offset into parameters.
    **/
   private int input(String[] args, int x){
-    while(args[++x].charAt(0) != '-'){
-      input.add(args[x]);
+    while(x + 1 < args.length && args[x + 1].charAt(0) != '-'){
+      input.add(args[++x]);
     }
-    return x - 1;
+    return x;
   }
 
   /**
@@ -197,10 +197,10 @@ public class Main{
    * @return New offset into parameters.
    **/
   private int output(String[] args, int x){
-    while(args[++x].charAt(0) != '-'){
-      output.add(args[x]);
+    while(x + 1 < args.length && args[x + 1].charAt(0) != '-'){
+      output.add(args[++x]);
     }
-    return x - 1;
+    return x;
   }
 
   /**
