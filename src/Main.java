@@ -87,6 +87,7 @@ public class Main{
     if(input.size() > 0){
       /* Loop over the inputs */
       for(int x = 0; x < input.size(); x++){
+        double p = ((double)x / input.size()) * 100.0;
         String in = input.get(x);
         String out = null;
         /* Set an output if one not defined */
@@ -95,7 +96,7 @@ public class Main{
         }else{
           out = in + "." + type;
         }
-        System.out.println("Converting '" + in + "' to '" + out + "...'");
+        System.out.println("Converting '" + in + "'->'" + out + "' " + p + "%");
         IMQ imq = new IMQ(in);
         imq.decompress(recover);
         imq.save(out, type);
