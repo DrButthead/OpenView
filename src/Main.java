@@ -150,21 +150,24 @@ public class Main{
     System.out.println("");
     System.out.println("    -h  --help     Display this help");
     System.out.println("    -f  --format   Format of engineering table");
-    System.out.println("                     <FORMAT> 'none' 'prop' 'json'");
-    System.out.println("    -i  --input    Input a file to be converted");
-    System.out.println("                     <FILE> Compressed IMQ file");
-    System.out.println("    -o  --output   Output filename for image");
-    System.out.println("                     <FILE> The desired image name");
+    System.out.println("                     <FORMAT> 'none' No file");
+    System.out.println("                              'prop' Properties");
+    System.out.println("                              'json' (default)");
+    System.out.println("    -i  --input    Input a file(s) to be converted");
+    System.out.println("                     <FILE(s)> Compressed IMQ file");
+    System.out.println("    -o  --output   Output filename for image(s)");
+    System.out.println("                     <FILE(s)> Output image name");
     System.out.println("    -r  --recover  Attempt to recover image");
     System.out.println("    -t  --type     Output image type");
-    System.out.println("                     <TYPE> 'jpg' or 'png'");
+    System.out.println("                     <TYPE> 'jpg'");
+    System.out.println("                            'png' (default)");
     System.out.println("    -z  --test     Perform internal checks");
     System.out.println("");
     System.out.println("  Usage");
     System.out.println("");
-    System.out.println("    openview -t png -i in.imq");
+    System.out.println("    openview -i in.imq");
     System.out.println("");
-    System.out.println("    Output: in.imq.png");
+    System.out.println("    Output: 'in.imq.png' and 'in.imq.png.txt'");
     return x;
   }
 
