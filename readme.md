@@ -1,5 +1,5 @@
 *An open-source implementation of NASA's 'NASAView'.* The purpose of this
-program if provide a ported command line version of the decompression in order
+program is provide a ported command line version of the decompression in order
 to allow others to view the historic planetary images.
 
 **Dislaimer:** The content in `archive` is for reference only. Please refer to
