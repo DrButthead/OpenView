@@ -215,8 +215,11 @@ public class IMQ{
    * decompress()
    *
    * Perform the decompression on the image.
+   *
+   * @param recover True if image recovery should be attempted if corruption is
+   * detected, false to ignore corruption.
    **/
-  public void decompress(){
+  public void decompress(boolean recover){
     /* Don't double decompress */
     if(decomp != null){
       /* TODO: Figure out what to do with the engineering summary. */
@@ -237,11 +240,15 @@ public class IMQ{
       }
       /* Check that output histograms match */
       boolean match = true;
-      for(int x = 0; x < realHist.length; x++){
+      for(int x = 0; x < realHist.length && match; x++){
         match &= realHist[x] == imgHist[x];
       }
       if(!match){
         System.err.println("(error) Issues when decoding image");
+        /* If set, attempt recovery */
+        if(recover){
+          System.out.println("Attempting image recovery...");
+        }
       }
     }
   }

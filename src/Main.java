@@ -9,6 +9,7 @@ public class Main{
   private String format;
   private String input;
   private String output;
+  private boolean recover;
   private String type;
 
   /**
@@ -39,6 +40,7 @@ public class Main{
     format = "prop";
     input = null;
     output = null;
+    recover = false;
     type = "png";
     /* Parse command line parameters */
     for(int x = 0; x < args.length; x++){
@@ -59,6 +61,10 @@ public class Main{
         case "-o" :
         case "--output" :
           x = output(args, x);
+          break;
+        case "-r" :
+        case "--recover" :
+          x = recover(args, x);
           break;
         case "-t" :
         case "--type" :
@@ -82,7 +88,7 @@ public class Main{
         output = input + "." + type;
       }
       IMQ imq = new IMQ(input);
-      imq.decompress();
+      imq.decompress(recover);
       imq.save(output, type);
       imq.saveTable(output + ".txt", format);
     }else{
@@ -134,16 +140,17 @@ public class Main{
     System.out.println("");
     System.out.println("  OPTions");
     System.out.println("");
-    System.out.println("    -h  --help    Display this help");
-    System.out.println("    -f  --format  Format of engineering table");
-    System.out.println("                    <FORMAT> 'none' 'prop' 'json'");
-    System.out.println("    -i  --input   Input a file to be converted");
-    System.out.println("                    <FILE> Compressed IMQ file");
-    System.out.println("    -o  --output  Output filename for image");
-    System.out.println("                    <FILE> The desired image name");
-    System.out.println("    -t  --type    Output image type");
-    System.out.println("                    <TYPE> 'jpg' or 'png'");
-    System.out.println("    -z  --test    Perform internal checks");
+    System.out.println("    -h  --help     Display this help");
+    System.out.println("    -f  --format   Format of engineering table");
+    System.out.println("                     <FORMAT> 'none' 'prop' 'json'");
+    System.out.println("    -i  --input    Input a file to be converted");
+    System.out.println("                     <FILE> Compressed IMQ file");
+    System.out.println("    -o  --output   Output filename for image");
+    System.out.println("                     <FILE> The desired image name");
+    System.out.println("    -r  --recover  Attempt to recover image");
+    System.out.println("    -t  --type     Output image type");
+    System.out.println("                     <TYPE> 'jpg' or 'png'");
+    System.out.println("    -z  --test     Perform internal checks");
     System.out.println("");
     System.out.println("  Usage");
     System.out.println("");
@@ -188,6 +195,20 @@ public class Main{
     }
     ++x;
     output = args[x];
+    return x;
+  }
+
+  /**
+   * recover()
+   *
+   * An option to attempt image recovery.
+   *
+   * @param args The command line arguments.
+   * @param x The current offset into the parameters.
+   * @return New offset into parameters.
+   **/
+  private int recover(String[] args, int x){
+    recover = true;
     return x;
   }
 
