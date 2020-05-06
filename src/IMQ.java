@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
  **/
 public class IMQ{
   private HashMap<String, String> config;
+  private long[] imgHist;
   private long[] encHist;
   private Decomp decomp;
   private byte[] file;
@@ -37,12 +38,54 @@ public class IMQ{
   public IMQ(String filename){
     /* Initialize internal values */
     config = new HashMap<String, String>();
+    imgHist = null;
     encHist = null;
     decomp = null;
+    file = null;
     img = null;
+    /* Initialize configuration */
+    initConfig(filename);
+    /* Assert we understand the type */
+    if(!config.get("IMAGE.SAMPLE_TYPE").equals("UNSIGNED_INTEGER")){
+      System.err.println("(error) Unknown image sample type");
+    }
+    if(!config.get("ENCODING_HISTOGRAM.ITEM_TYPE").equals("VAX_INTEGER")){
+      System.err.println("(error) Unknown encoding histogram item type");
+    }
+    if(!config.get("IMAGE_HISTOGRAM.ITEM_TYPE").equals("VAX_INTEGER")){
+      System.err.println("(error) Unknown image histogram image type");
+    }
+    if(!config.get("IMAGE.ENCODING_TYPE").equals("HUFFMAN_FIRST_DIFFERENCE")){
+      System.err.println("(error) Unknown image encoding type");
+    }
+    if(!config.get("IMAGE_HISTOGRAM.ITEMS").equals("256")){
+      System.err.println("(error) Unknown image histogram items");
+    }
+    if(!config.get("IMAGE.SAMPLE_BITS").equals("8")){
+      System.err.println("(error) Unknown image sample bits");
+    }
+    /* Pull out required variables from engineering tables */
+    width = Integer.parseInt(config.get("IMAGE.LINE_SAMPLES"));
+    height = Integer.parseInt(config.get("IMAGE.LINES"));
+    img = new byte[width * height];
+    recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
+    /* Generate from image histogram */
+    initImgHist();
+    /* Generate from encoding histogram */
+    initEncHist();
+    decomp = new Decomp(encHist);
+  }
+
+  /**
+   * initConfig()
+   *
+   * Load the image file and parse the initial table.
+   *
+   * @param filename The filename to load from.
+   **/
+  private void initConfig(String filename){
     /* Read the file into byte array */
     Path path = Paths.get(filename);
-    file = null;
     try{
       file = Files.readAllBytes(path);
     }catch(IOException e){
@@ -90,38 +133,50 @@ public class IMQ{
           break;
       }
     }
-    /* Assert we understand the type */
-    if(!config.get("IMAGE.SAMPLE_TYPE").equals("UNSIGNED_INTEGER")){
-      System.err.println("(error) Unknown image sample type");
+  }
+
+  /**
+   * initImgHist()
+   *
+   * Initialize the image histogram from the file.
+   **/
+  private void initImgHist(){
+    /* Image histogram data structure */
+    int imgHistBits = Integer.parseInt(config.get("IMAGE_HISTOGRAM.ITEM_BITS"));
+    if(imgHistBits <= 0 || imgHistBits % 8 != 0){
+      System.err.println("(error) Unknown image histogram data type");
     }
-    if(!config.get("ENCODING_HISTOGRAM.ITEM_TYPE").equals("VAX_INTEGER")){
-      System.err.println("(error) Unknown encoding histogram item type");
+    int imgHistBytes = imgHistBits / 8;
+    /* Pull out image histogram */
+    imgHist = new long[Integer.parseInt(config.get("IMAGE_HISTOGRAM.ITEMS"))];
+    byte[] imgHistRaw = new byte[imgHist.length * imgHistBytes];
+    byte[] t = new byte[0];
+    for(int x = 0; ptr < file.length && x < imgHistRaw.length - imgHistBytes; x += t.length){
+      t = readVar();
+      System.arraycopy(t, 0, imgHistRaw, x, t.length);
     }
-    if(!config.get("IMAGE_HISTOGRAM.ITEM_TYPE").equals("VAX_INTEGER")){
-      System.err.println("(error) Unknown image histogram image type");
+    /* Fill image histogram array */
+    int x = 0;
+    for(int i = 0; i < imgHist.length; i++){
+      imgHist[i] = (((long)imgHistRaw[x++] & 0xFF)      )
+                 | (((long)imgHistRaw[x++] & 0xFF) <<  8)
+                 | (((long)imgHistRaw[x++] & 0xFF) << 16)
+                 | (((long)imgHistRaw[x++] & 0xFF) << 24);
     }
-    if(!config.get("IMAGE.ENCODING_TYPE").equals("HUFFMAN_FIRST_DIFFERENCE")){
-      System.err.println("(error) Unknown image encoding type");
-    }
-    if(!config.get("IMAGE_HISTOGRAM.ITEMS").equals("256")){
-      System.err.println("(error) Unknown image histogram items");
-    }
-    if(!config.get("IMAGE.SAMPLE_BITS").equals("8")){
-      System.err.println("(error) Unknown image sample bits");
-    }
-    int encHistBits = Integer.parseInt(config.get("IMAGE_HISTOGRAM.ITEM_BITS"));
+  }
+
+  /**
+   * initEncHist()
+   *
+   * Initialize the encoding histogram from the file.
+   **/
+  private void initEncHist(){
+    /* Encoding histogram data structure */
+    int encHistBits = Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEM_BITS"));
     if(encHistBits <= 0 || encHistBits % 8 != 0){
-      System.err.println("(error) Unknown histogram data type");
+      System.err.println("(error) Unknown encoding histogram data type");
     }
     int encHistBytes = encHistBits / 8;
-    /* Pull out required variables from engineering tables */
-    width = Integer.parseInt(config.get("IMAGE.LINE_SAMPLES"));
-    height = Integer.parseInt(config.get("IMAGE.LINES"));
-    img = new byte[width * height];
-    recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
-    /* TODO: Figure out what to do with the image histogram. */
-    System.out.println("(internal) Skipping " + readVar().length + " bytes");
-    System.out.println("(internal) Skipping " + readVar().length + " bytes");
     /* Pull out encoding histogram */
     encHist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS")) + 1];
     byte[] encHistRaw = new byte[encHist.length * encHistBytes];
@@ -138,8 +193,6 @@ public class IMQ{
                  | (((long)encHistRaw[x++] & 0xFF) << 16)
                  | (((long)encHistRaw[x++] & 0xFF) << 24);
     }
-    /* Generate from encoding histogram */
-    decomp = new Decomp(encHist);
   }
 
   /**
