@@ -230,6 +230,25 @@ public class Util{
   }
 
   /**
+   * escape()
+   *
+   * Escape a give String to make it safe to be printed or stored.
+   *
+   * @param s The input String.
+   * @return The output String.
+   **/
+  public static String escape(String s){
+    return s.replace("\\", "\\\\")
+            .replace("\t", "\\t")
+            .replace("\b", "\\b")
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\f", "\\f")
+            .replace("\'", "\\'")
+            .replace("\"", "\\\"");
+  }
+
+  /**
    * test()
    *
    * Test that the functions documented here work correctly.
@@ -242,6 +261,7 @@ public class Util{
     pass |= reverseEndian(0xAABB, 2) == 0xBBAA;
     pass |= reverseEndian(0xAABBCC, 3) == 0xCCBBAA;
     pass |= reverseEndian(0xAABBCCDD, 4) == 0xDDCCBBAA;
+    pass |= escape("Hello\r\n\tW\"o\"rld\n").equals("Hello\\r\\n\\tW\\\"o\\\"rld\\n");
     return pass;
   }
 }
