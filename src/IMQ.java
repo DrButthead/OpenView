@@ -242,7 +242,9 @@ public class IMQ{
           temp += "{\n";
           String[] keys = config.keySet().toArray(new String[config.size()]);
           for(int x = 0; x < keys.length; x++){
-            temp += "  \"" + keys[x] + "\":\"" + config.get(keys[x]) + "\"";
+            String k = Util.escape(keys[x]);
+            String v = Util.escape(config.get(keys[x]));
+            temp += "  \"" + k + "\":\"" + v + "\"";
             temp += x < keys.length - 1 ? ",\n" : "\n";
           }
           temp += "}";
