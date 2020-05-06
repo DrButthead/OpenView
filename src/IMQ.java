@@ -248,6 +248,7 @@ public class IMQ{
         /* If set, attempt recovery */
         if(recover){
           System.out.println("Attempting image recovery...");
+          /* TODO: Write the recovery. */
         }
       }
     }
