@@ -122,7 +122,11 @@ public class IMQ{
           /* If we are here, we have a key value pair yaay! */
           String[] kvp = str.split("=");
           String k = kvp[0].trim();
-          String v = kvp[1].trim();
+          String v = "";
+          /* NOTE: Not supposed to happen, but can. */
+          if(kvp.length > 1){
+            v = kvp[1].trim();
+          }
           /* We have a new object? */
           if(k.equals("OBJECT")){
             obj = v + ".";
