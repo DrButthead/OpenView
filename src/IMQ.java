@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 
@@ -246,13 +247,50 @@ public class IMQ{
           }
           break;
         case "json" :
+          /* Find nodes */
+          HashMap<String, ArrayList<String>> data = new HashMap<String, ArrayList<String>>();
+          for(String k : config.keySet()){
+            String[] parts = k.split("\\.");
+            /* Sanity check our one parent max assumption */
+            if(parts.length > 2){
+              System.err.println("(internal) Too many parents");
+            }
+            ArrayList<String> childs = data.get(parts[0]);
+            /* Generate a new entry if needed */
+            if(childs == null){
+              childs = new ArrayList<String>();
+              data.put(parts[0], childs);
+            }
+            /* Throw the element in there if needed */
+            if(parts.length >= 2){
+              childs.add(parts[1]);
+            }
+          }
+          /* Generate JSON */
           temp += "{\n";
-          String[] keys = config.keySet().toArray(new String[config.size()]);
-          for(int x = 0; x < keys.length; x++){
-            String k = Util.escape(keys[x]);
-            String v = Util.escape(config.get(keys[x]));
-            temp += "  \"" + k + "\":\"" + v + "\"";
-            temp += x < keys.length - 1 ? ",\n" : "\n";
+          String[] parents = data.keySet().toArray(new String[data.size()]);
+          for(int x = 0; x < parents.length; x++){
+            ArrayList<String> childs = data.get(parents[x]);
+            /* Case where parent has childs */
+            if(childs.size() > 0){
+              /* Build the header */
+              temp += "  \"" + parents[x] + "\":{\n";
+              /* Fill with childs */
+              for(int y = 0; y < childs.size(); y++){
+                String k = Util.escape(childs.get(y));
+                String v = Util.escape(config.get(parents[x] + "." + childs.get(y)));
+                temp += "    \"" + k + "\":\"" + v + "\"";
+                temp += y < childs.size() - 1 ? ",\n" : "\n";
+              }
+              /* Build the footer */
+              temp += x < parents.length - 1 ? "  },\n" : "  }\n";
+            /* Case where parent is all alone :( */
+            }else{
+              String k = Util.escape(parents[x]);
+              String v = Util.escape(config.get(parents[x]));
+              temp += "  \"" + k + "\":\"" + v + "\"";
+              temp += x < parents.length - 1 ? ",\n" : "\n";
+            }
           }
           temp += "}";
           break;
