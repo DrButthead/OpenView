@@ -222,6 +222,7 @@ public class IMQ{
       /* TODO: Figure out what to do with the engineering summary. */
       System.out.println("(internal) Skipping " + readVar().length + " bytes");
       /* Pull out lines from file */
+      long[] realHist = new long[imgHist.length];
       for(int line = height - 1; ptr < file.length && line >= 0; line--){
         /* Read next line */
         byte[] lin = readVar();
@@ -229,6 +230,18 @@ public class IMQ{
         byte[] lout = decomp.decompress(lin, lin.length, recordBytes);
         /* Copy into image buffer */
         System.arraycopy(lout, 0, img, line * width, width);
+        /* Update histogram */
+        for(int x = 0; x < width; x++){
+          ++realHist[(int)lout[x] & 0xFF];
+        }
+      }
+      /* Check that output histograms match */
+      boolean match = true;
+      for(int x = 0; x < realHist.length; x++){
+        match &= realHist[x] == imgHist[x];
+      }
+      if(!match){
+        System.err.println("(error) Issues when decoding image");
       }
     }
   }
