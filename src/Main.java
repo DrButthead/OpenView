@@ -87,14 +87,16 @@ public class Main{
     if(input.size() > 0){
       /* Loop over the inputs */
       for(int x = 0; x < input.size(); x++){
+        String in = input.get(x);
         String out = null;
         /* Set an output if one not defined */
         if(output.size() > x){
           out = output.get(x);
         }else{
-          out = input.get(x) + "." + type;
+          out = in + "." + type;
         }
-        IMQ imq = new IMQ(input.get(x));
+        System.out.println("Converting '" + in + "' to '" + out + "...'");
+        IMQ imq = new IMQ(in);
         imq.decompress(recover);
         imq.save(out, type);
         imq.saveTable(out + ".txt", format);
