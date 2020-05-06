@@ -12,6 +12,19 @@ sure of what you are running. By writing an open source Java implementation,
 all machines with a JVM should be able to run the program and perform
 bug-fixes/extensions where required.
 
+# State
+
+`v1.1` (latest) is able to process the entirety of
+[Volume 4](https://archive.org/details/VoyagerstotheOuterPlanetsVol4) and
+produced a full (or partial image in the case of corrupted data) for all
+images.
+
+In the future it is planned to introduce the following:
+
+* [Front-End GUI](https://github.com/danielbarry/OpenView/issues/2)
+* [Decode and Handle Unknown Records](https://github.com/danielbarry/OpenView/issues/3)
+* [Attempt Recovery From Corruption](https://github.com/danielbarry/OpenView/issues/6)
+
 # Building
 
 You'll need Java 7 or above and [Apache Ant](http://ant.apache.org/). Then you
