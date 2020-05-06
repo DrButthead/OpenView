@@ -213,6 +213,13 @@ public class IMQ{
       }catch(IOException e){
         System.err.println("(error) Unable to save image");
       }
+      /* Adjust the file properties */
+      Util.setFileProperties(
+        filename,
+        Util.parseFileTime(config.get("IMAGE_TIME")),
+        Util.parseFileTime(config.get("EARTH_RECEIVED_TIME")),
+        Util.parseFileTime(config.get("IMAGE_TIME"))
+      );
     }else{
       System.err.println("(error) Image must be decompressed first");
     }
@@ -259,6 +266,13 @@ public class IMQ{
       }catch(IOException e){
         System.err.println("(error) Unable to save engineering table to disk");
       }
+      /* Adjust the file properties */
+      Util.setFileProperties(
+        filename,
+        Util.parseFileTime(config.get("IMAGE_TIME")),
+        Util.parseFileTime(config.get("EARTH_RECEIVED_TIME")),
+        Util.parseFileTime(config.get("IMAGE_TIME"))
+      );
     }else{
       System.err.println("(error) Image must be decompressed first");
     }
