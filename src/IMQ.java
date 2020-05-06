@@ -260,65 +260,80 @@ public class IMQ{
         System.err.println("(error) Image didn't match the histogram");
         /* If set, attempt recovery */
         if(recover){
-          System.out.println("Attempting image recovery...");
-          int lenAvg = lenSum / lenCnt;
-          int[] bad = new int[height];
-          /* Pre-search for bad lines */
-          ptr = ptrImg;
-          for(int line = height - 1; ptr < file.length && line >= 0; line--){
-            /* Read next line */
-            byte[] lin = readVar();
-            /* Check lines lines */
-            bad[line] = 0;
-            if(lin.length < lenAvg / 1.5){
-              bad[line] = -lin.length;
-            }
-            if(lin.length > lenAvg * 1.5){
-              bad[line] = lin.length;
-            }
+          recovery(ptrImg, lenSum, lenCnt);
+        }
+      }
+    }
+  }
+
+  /**
+   * recovery()
+   *
+   * Attempt to perform image recovery.
+   *
+   * @param ptrImg A pointer into the file array where the image data starts.
+   * @param lenSum The sum of the input line lengths.
+   * @param lenCnt The count of the number of lines this sum is for. Note that
+   * this may not be the total lines if the file is corrupted.
+   **/
+  private void recovery(int ptrImg, int lenSum, int lenCnt){
+    System.out.println("Attempting image recovery...");
+    int lenAvg = lenSum / lenCnt;
+    int[] bad = new int[height];
+    /* Pre-search for bad lines */
+    ptr = ptrImg;
+    for(int line = height - 1; ptr < file.length && line >= 0; line--){
+      /* Read next line */
+      byte[] lin = readVar();
+      /* Check lines lines */
+      bad[line] = 0;
+      if(lin.length < lenAvg / 1.5){
+        bad[line] = -lin.length;
+      }
+      if(lin.length > lenAvg * 1.5){
+        bad[line] = lin.length;
+      }
+    }
+    /* Attempt some form of recovery */
+    for(int line = height - 1; line >= 0; line--){
+      /* Check if this line needs an edit */
+      if(bad[line] == 0){
+        continue;
+      }
+      boolean corrupt = false;
+      /* Blur lines */
+      for(int x = 0; x < width; x++){
+        int avg = 0;
+        int cnt = 0;
+        for(int y = line - 1; y >= 0; y--){
+          int p = (int)img[x + (y * width)] & 0xFF;
+          if(bad[y] == 0){
+            avg += p;
+            ++cnt;
+            break;
           }
-          /* Attempt some form of recovery */
-          for(int line = height - 1; line >= 0; line--){
-            /* Check if this line needs an edit */
-            if(bad[line] == 0){
-              continue;
-            }
-            boolean corrupt = false;
-            /* Blur lines */
-            for(int x = 0; x < width; x++){
-              int avg = 0;
-              int cnt = 0;
-              for(int y = line - 1; y >= 0; y--){
-                int p = (int)img[x + (y * width)] & 0xFF;
-                if(bad[y] == 0){
-                  avg += p;
-                  ++cnt;
-                  break;
-                }
-              }
-              for(int y = line + 1; y < height; y++){
-                int p = (int)img[x + (y * width)] & 0xFF;
-                if(bad[y] == 0){
-                  avg += p;
-                  ++cnt;
-                  break;
-                }
-              }
-              /* Check if we actually can blur */
-              if(cnt > 0){
-                avg /= cnt;
-                int p = (int)img[x + (line * width)] & 0xFF;
-                /* Check if it's close */
-                if(corrupt || bad[line] < 0 || p < avg * 0.5 || p > avg * 1.5){
-                  img[x + (line * width)] = (byte)avg;
-                  corrupt = true;
-                }
-              }
-            }
+        }
+        for(int y = line + 1; y < height; y++){
+          int p = (int)img[x + (y * width)] & 0xFF;
+          if(bad[y] == 0){
+            avg += p;
+            ++cnt;
+            break;
+          }
+        }
+        /* Check if we actually can blur */
+        if(cnt > 0){
+          avg /= cnt;
+          int p = (int)img[x + (line * width)] & 0xFF;
+          /* Check if it's close */
+          if(corrupt || bad[line] < 0 || p < avg * 0.5 || p > avg * 1.5){
+            img[x + (line * width)] = (byte)avg;
+            corrupt = true;
           }
         }
       }
     }
+
   }
 
   /**
