@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
  **/
 public class IMQ{
   private HashMap<String, String> config;
-  private long[] hist;
+  private long[] encHist;
   private Decomp decomp;
   private byte[] file;
   private int ptr;
@@ -37,7 +37,7 @@ public class IMQ{
   public IMQ(String filename){
     /* Initialize internal values */
     config = new HashMap<String, String>();
-    hist = null;
+    encHist = null;
     decomp = null;
     img = null;
     /* Read the file into byte array */
@@ -109,38 +109,38 @@ public class IMQ{
     if(!config.get("IMAGE.SAMPLE_BITS").equals("8")){
       System.err.println("(error) Unknown image sample bits");
     }
-    int histBits = Integer.parseInt(config.get("IMAGE_HISTOGRAM.ITEM_BITS"));
-    if(histBits <= 0 || histBits % 8 != 0){
+    int encHistBits = Integer.parseInt(config.get("IMAGE_HISTOGRAM.ITEM_BITS"));
+    if(encHistBits <= 0 || encHistBits % 8 != 0){
       System.err.println("(error) Unknown histogram data type");
     }
-    int histBytes = histBits / 8;
+    int encHistBytes = encHistBits / 8;
     /* Pull out required variables from engineering tables */
     width = Integer.parseInt(config.get("IMAGE.LINE_SAMPLES"));
     height = Integer.parseInt(config.get("IMAGE.LINES"));
     recordBytes = Integer.parseInt(config.get("RECORD_BYTES"));
     /* Initialize variables to be used */
-    hist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS")) + 1];
+    encHist = new long[Integer.parseInt(config.get("ENCODING_HISTOGRAM.ITEMS")) + 1];
     img = new byte[width * height];
     /* TODO: Figure out what to do with the image histogram. */
     System.out.println("(internal) Skipping " + readVar().length + " bytes");
     System.out.println("(internal) Skipping " + readVar().length + " bytes");
     /* Pull out histogram */
-    byte[] histRaw = new byte[hist.length * histBytes];
+    byte[] encHistRaw = new byte[encHist.length * encHistBytes];
     byte[] t = new byte[0];
-    for(int x = 0; ptr < file.length && x < histRaw.length - histBytes; x += t.length){
+    for(int x = 0; ptr < file.length && x < encHistRaw.length - encHistBytes; x += t.length){
       t = readVar();
-      System.arraycopy(t, 0, histRaw, x, t.length);
+      System.arraycopy(t, 0, encHistRaw, x, t.length);
     }
     /* Fill Histogram array */
     int x = 0;
-    for(int i = 0; i < hist.length; i++){
-      hist[i] = (((long)histRaw[x++] & 0xFF)      )
-              | (((long)histRaw[x++] & 0xFF) <<  8)
-              | (((long)histRaw[x++] & 0xFF) << 16)
-              | (((long)histRaw[x++] & 0xFF) << 24);
+    for(int i = 0; i < encHist.length; i++){
+      encHist[i] = (((long)encHistRaw[x++] & 0xFF)      )
+                 | (((long)encHistRaw[x++] & 0xFF) <<  8)
+                 | (((long)encHistRaw[x++] & 0xFF) << 16)
+                 | (((long)encHistRaw[x++] & 0xFF) << 24);
     }
-    /* Generate histogram */
-    decomp = new Decomp(hist);
+    /* Generate from encoding histogram */
+    decomp = new Decomp(encHist);
   }
 
   /**
